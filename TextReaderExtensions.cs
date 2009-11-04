@@ -16,7 +16,7 @@ namespace Go
     {
         /// <summary>
         /// Reads and ignores white space characters, until a non-whitespace
-        /// is encounteres.
+        /// is encountered.
         /// </summary>
         /// <param name="tr">The TextReader object.</param>
         public static void EatWS(this TextReader tr)
