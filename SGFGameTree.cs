@@ -6,7 +6,11 @@ using System.IO;
 
 namespace Go
 {
-    class SGFGameTree
+    /// <summary>
+    /// Represents an SGF game-tree, see the SGF specification at
+    /// <a href="http://www.red-bean.com/sgf">http://www.red-bean.com/sgf</a>
+    /// </summary>
+    public class SGFGameTree
     {
         public SGFSequence Sequence = new SGFSequence();
         public List<SGFGameTree> GameTrees = new List<SGFGameTree>();

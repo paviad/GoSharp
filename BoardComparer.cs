@@ -5,7 +5,11 @@ using System.Text;
 
 namespace Go
 {
-    public class SuperKoComparer :IEqualityComparer<Board>
+    /// <summary>
+    /// This class implements IEqualityComparer&lt;Board&gt; that compares boards by
+    /// their content. The purpose of this class is to enable the super-ko rule.
+    /// </summary>
+    public class SuperKoComparer : IEqualityComparer<Board>
     {
         public bool Equals(Board x, Board y)
         {
@@ -14,7 +18,7 @@ namespace Go
             {
                 for (int j = 0; j < x.SizeY; j++)
                 {
-                    if(x[i,j]!=y[i,j]) return false;
+                    if (x[i, j] != y[i, j]) return false;
                 }
             }
             return true;

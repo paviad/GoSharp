@@ -6,7 +6,11 @@ using System.IO;
 
 namespace Go
 {
-    class SGFProperty
+    /// <summary>
+    /// Represents an SGF property, see the SGF specification at
+    /// <a href="http://www.red-bean.com/sgf">http://www.red-bean.com/sgf</a>
+    /// </summary>
+    public class SGFProperty
     {
         public string Name;
         public List<SGFPropValue> Values = new List<SGFPropValue>();

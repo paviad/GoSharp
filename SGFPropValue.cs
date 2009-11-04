@@ -5,7 +5,11 @@ using System.Text;
 
 namespace Go
 {
-    class SGFPropValue
+    /// <summary>
+    /// Represents an SGF property-value, see the SGF specification at
+    /// <a href="http://www.red-bean.com/sgf">http://www.red-bean.com/sgf</a>
+    /// </summary>
+    public class SGFPropValue
     {
         public string Value;
 

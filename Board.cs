@@ -5,6 +5,10 @@ using System.Text;
 
 namespace Go
 {
+    /// <summary>
+    /// Encapsulates a board position, without any game context. This object also
+    /// supports scoring mode by setting the IsScoring property to true.
+    /// </summary>
     public class Board
     {
         Content[,] content;
@@ -12,8 +16,22 @@ namespace Go
         List<Group> groupCache = null;
         bool _IsScoring = false;
 
+        /// <summary>
+        /// Gets the horizontal size of the board.
+        /// </summary>
         public int SizeX { get; private set; }
+
+        /// <summary>
+        /// Gets the vertical size of the board.
+        /// </summary>
         public int SizeY { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a flag indicating whether this board is in scoring mode.
+        /// If this property is changed from false to true, the scoring cache is cleared,
+        /// and all dead groups are reinstated. To reset the scoring process, set this
+        /// property to false and then to true again, or alternatively call ResetScoring.
+        /// </summary>
         public bool IsScoring
         {
             get
@@ -30,6 +48,13 @@ namespace Go
                 }
             }
         }
+
+        /// <summary>
+        /// Gets a Dictionary&lt;Content,int&gt; containing the score for each side. The score
+        /// includes dead groups but not including captured stones (no game context).
+        /// If SetDeadGroup is called, this property must be retrieved again to get
+        /// the updated score.
+        /// </summary>
         public Dictionary<Content, int> Territory
         {
             get
@@ -62,13 +87,23 @@ namespace Go
                 return rc;
             }
         }
-
+        
+        /// <summary>
+        /// Constructs a board object of specified horizontal and vertical size.
+        /// </summary>
+        /// <param name="sx">The horizontal size of the board.</param>
+        /// <param name="sy">The vertical size of the board.</param>
         public Board(int sx, int sy)
         {
             content = new Content[sx, sy];
             SizeX = sx;
             SizeY = sy;
         }
+
+        /// <summary>
+        /// Constructs a board object from an existing board object, copying its content.
+        /// </summary>
+        /// <param name="fromBoard">The source board object.</param>
         public Board(Board fromBoard)
         {
             SizeX = fromBoard.SizeX;
@@ -82,6 +117,14 @@ namespace Go
                 }
             }
         }
+
+        /// <summary>
+        /// Construct a board object from a parameter array. Each parameter may be
+        /// 0 for empty, 1 for black or 2 for white, and the number of parameters must
+        /// be a square of a natural number. The board size will be a square whose side
+        /// length is the square root of the number of parameters.
+        /// </summary>
+        /// <param name="c">The board content (0-empty, 1-black, 2-white).</param>
         public Board(params int[] c)
         {
             if (c.Length == 0)
@@ -105,6 +148,14 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Gets or sets the board content at the specified point. Changing the board
+        /// content using this property is not considered a game move, but rather a
+        /// setup move.
+        /// </summary>
+        /// <param name="x">The X coordinate of the position.</param>
+        /// <param name="y">The Y coordinate of the position.</param>
+        /// <returns></returns>
         public Content this[int x, int y]
         {
             get
@@ -116,6 +167,14 @@ namespace Go
                 SetContentAt(x, y, value);
             }
         }
+
+        /// <summary>
+        /// Gets or sets the board content at the specified point. Changing the board
+        /// content using this property is not considered a game move, but rather a
+        /// setup move.
+        /// </summary>
+        /// <param name="n">The coordinates of the position.</param>
+        /// <returns></returns>
         public Content this[Point n]
         {
             get
@@ -127,30 +186,70 @@ namespace Go
                 SetContentAt(n.x, n.y, value);
             }
         }
-        private Content GetContentAt(Point n)
+
+        /// <summary>
+        /// Gets the board content at the specified point.
+        /// </summary>
+        /// <param name="n">The coordinates of the position.</param>
+        /// <returns></returns>
+        public Content GetContentAt(Point n)
         {
             return GetContentAt(n.x, n.y);
         }
+
+        /// <summary>
+        /// Gets the board content at the specified point.
+        /// </summary>
+        /// <param name="x">The X coordinate of the position.</param>
+        /// <param name="y">The Y coordinate of the position.</param>
+        /// <returns></returns>
         public Content GetContentAt(int x, int y)
         {
             if (IsScoring && content[x, y] != Content.Empty && groupCache2[x, y] != null && groupCache2[x, y].IsDead)
                 return Content.Empty;
             return content[x, y];
         }
+
+        /// <summary>
+        /// Sets the board content at the specified point, this is not considered a
+        /// game move, but rather a setup move.
+        /// </summary>
+        /// <param name="p">The coordinates of the position.</param>
+        /// <param name="content">The new content at the position.</param>
         public void SetContentAt(Point p, Content content)
         {
             SetContentAt(p.x, p.y, content);
         }
+
+        /// <summary>
+        /// Sets the board content at the specified point, this is not considered a
+        /// game move, but rather a setup move.
+        /// </summary>
+        /// <param name="x">The X coordinate of the position.</param>
+        /// <param name="y">The Y coordinate of the position.</param>
+        /// <param name="c">The new content at the position.</param>
         public void SetContentAt(int x, int y, Content c)
         {
             content[x, y] = c;
             ClearGroupCache();
         }
 
+        /// <summary>
+        /// Gets the group including the board content at the specified position.
+        /// </summary>
+        /// <param name="n">The coordinates of the position.</param>
+        /// <returns>A group object containing a list of points.</returns>
         public Group GetGroupAt(Point n)
         {
             return GetGroupAt(n.x, n.y);
         }
+
+        /// <summary>
+        /// Gets the group including the board content at the specified position.
+        /// </summary>
+        /// <param name="x">The X coordinate of the position.</param>
+        /// <param name="y">The Y coordinate of the position.</param>
+        /// <returns>A group object containing a list of points.</returns>
         public Group GetGroupAt(int x, int y)
         {
             if (groupCache == null)
@@ -185,6 +284,11 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Gets the liberty count of the specified group.
+        /// </summary>
+        /// <param name="group">The group object.</param>
+        /// <returns>The number of liberties of the specified group.</returns>
         public int GetLiberties(Group group)
         {
             int libs = 0;
@@ -194,16 +298,31 @@ namespace Go
             }
             return libs;
         }
+
+        /// <summary>
+        /// Gets the liberty count of the group containing the board content at
+        /// the specified point.
+        /// </summary>
+        /// <param name="x">The X coordinate of the position.</param>
+        /// <param name="y">The Y coordinate of the position.</param>
+        /// <returns>The number of liberties.</returns>
         public int GetLiberties(int x, int y)
         {
             return GetLiberties(GetGroupAt(x, y));
         }
+
+        /// <summary>
+        /// Gets the liberty count of the group containing the board content at
+        /// the specified point.
+        /// </summary>
+        /// <param name="n">The coordinates of the position.</param>
+        /// <returns>The number of liberties.</returns>
         public int GetLiberties(Point n)
         {
             return GetLiberties(n.x, n.y);
         }
 
-        public void CalcTerritory()
+        private void CalcTerritory()
         {
             bool pass = true;
             while (pass)
@@ -222,10 +341,23 @@ namespace Go
                 }
             }
         }
+
+        /// <summary>
+        /// Marks a group as dead for the purposes of scoring. This method has no effect if
+        /// the board is not in scoring mode (see the IsScoring property).
+        /// </summary>
+        /// <param name="n">The coordinates of the position of a stone in the group.</param>
         public void SetDeadGroup(Point n)
         {
             SetDeadGroup(n.x, n.y);
         }
+
+        /// <summary>
+        /// Marks a group as dead for the purposes of scoring. This method has no effect if
+        /// the board is not in scoring mode (see the IsScoring property).
+        /// </summary>
+        /// <param name="x">The X coordinate of a position belonging to the group.</param>
+        /// <param name="y">The Y coordinate of a position belonging to the group.</param>
         public void SetDeadGroup(int x, int y)
         {
             Group g = GetGroupAt(x, y);
@@ -233,7 +365,17 @@ namespace Go
             g.IsDead = !g.IsDead;
         }
 
-        public List<Group> GetCapturedGroups(int x, int y)
+        /// <summary>
+        /// Resets the scoring process, unmarking dead groups.
+        /// </summary>
+        public void ResetScoring()
+        {
+            if (!IsScoring) return;
+            ClearGroupCache();
+            CalcTerritory();
+        }
+
+        internal List<Group> GetCapturedGroups(int x, int y)
         {
             Group group = GetGroupAt(x, y);
             List<Group> captures = new List<Group>();
@@ -259,7 +401,7 @@ namespace Go
             return rc;
         }
 
-        public int Capture(List<Group> captures)
+        internal int Capture(List<Group> captures)
         {
             int rc = 0;
             foreach (var g in captures)
@@ -268,19 +410,19 @@ namespace Go
             }
             return rc;
         }
-        public int Capture(Group g)
+        internal int Capture(Group g)
         {
             foreach (var p in g.Points)
                 SetContentAt(p, Content.Empty);
             return g.Points.Count();
         }
 
-        public void ClearGroupCache()
+        private void ClearGroupCache()
         {
             groupCache = null;
         }
 
-        public int GetContentHashCode()
+        internal int GetContentHashCode()
         {
             int hc = 0, tmp;
             foreach (var i in content)
@@ -292,6 +434,14 @@ namespace Go
             return hc;
         }
 
+        /// <summary>
+        /// Returns a multi-line string representation of the board with the scoring
+        /// state. Each spot is composed of two characters. The first is one of [.XO]
+        /// representing an empty, black or white board content respectively. The second
+        /// is one of [.xoD] representing unowned, black or white territory, or D for a
+        /// dead group.
+        /// </summary>
+        /// <returns>Returns the multi-line string representation of the board.</returns>
         public override string ToString()
         {
             string rc = "";

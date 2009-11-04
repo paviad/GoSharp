@@ -6,7 +6,11 @@ using System.IO;
 
 namespace Go
 {
-    class SGFNode
+    /// <summary>
+    /// Represents an SGF node, see the SGF specification at
+    /// <a href="http://www.red-bean.com/sgf">http://www.red-bean.com/sgf</a>
+    /// </summary>
+    public class SGFNode
     {
         public List<SGFProperty> Properties = new List<SGFProperty>();
 

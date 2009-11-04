@@ -6,7 +6,11 @@ using System.IO;
 
 namespace Go
 {
-    class SGFSequence
+    /// <summary>
+    /// Represents an SGF sequence, see the SGF specification at
+    /// <a href="http://www.red-bean.com/sgf">http://www.red-bean.com/sgf</a>
+    /// </summary>
+    public class SGFSequence
     {
         public List<SGFNode> Nodes = new List<SGFNode>();
 
