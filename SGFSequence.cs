@@ -12,6 +12,9 @@ namespace Go
     /// </summary>
     public class SGFSequence
     {
+        /// <summary>
+        /// Contains a list of SGF nodes.
+        /// </summary>
         public List<SGFNode> Nodes = new List<SGFNode>();
 
         internal void Read(TextReader sr)

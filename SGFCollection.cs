@@ -12,8 +12,15 @@ namespace Go
     /// </summary>
     public class SGFCollection
     {
+        /// <summary>
+        /// Contains a list of SGF game-tree objects.
+        /// </summary>
         public List<SGFGameTree> GameTrees = new List<SGFGameTree>();
 
+        /// <summary>
+        /// Parse an SGFCollection object from a TextReader.
+        /// </summary>
+        /// <param name="sr">The source TextReader.</param>
         public void Read(TextReader sr)
         {
             sr.EatWS();

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Go
 {
+    /// <summary>
+    /// Provides extension methods for the Go.Content enum.
+    /// </summary>
     public static class ContentExtensions
     {
         /// <summary>

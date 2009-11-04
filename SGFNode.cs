@@ -12,6 +12,9 @@ namespace Go
     /// </summary>
     public class SGFNode
     {
+        /// <summary>
+        /// Contains a list of SGF properties.
+        /// </summary>
         public List<SGFProperty> Properties = new List<SGFProperty>();
 
         internal void Read(TextReader sr)

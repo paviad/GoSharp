@@ -1,0 +1,707 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Go</name>
+    </assembly>
+    <members>
+        <member name="T:Go.SGFNode">
+            <summary>
+            Represents an SGF node, see the SGF specification at
+            <a href="http://www.red-bean.com/sgf">http://www.red-bean.com/sgf</a>
+            </summary>
+        </member>
+        <member name="F:Go.SGFNode.Properties">
+            <summary>
+            Contains a list of SGF properties.
+            </summary>
+        </member>
+        <member name="T:Go.Group">
+            <summary>
+            Represents a group of stones (or empty spaces) on a board object. This
+            object is context-free, i.e. it is not associated with a specific board.
+            In essence it is simply a set of board coordinates.
+            </summary>
+        </member>
+        <member name="M:Go.Group.#ctor(Go.Content)">
+            <summary>
+            Constructs a group object of specified content.
+            </summary>
+            <param name="c">The group content.</param>
+        </member>
+        <member name="M:Go.Group.AddPoint(System.Int32,System.Int32)">
+            <summary>
+            Adds a point to the group.
+            </summary>
+            <param name="x">The X coordinate of the point.</param>
+            <param name="y">The Y coordinate of the point.</param>
+        </member>
+        <member name="M:Go.Group.ContainsPoint(System.Int32,System.Int32)">
+            <summary>
+            Checks whether this group contains the specified point.
+            </summary>
+            <param name="x">The X coordinate of the point.</param>
+            <param name="y">The Y coordinate of the point.</param>
+            <returns>Returns true if the point is contained in the group.</returns>
+        </member>
+        <member name="M:Go.Group.AddNeighbour(System.Int32,System.Int32)">
+            <summary>
+            Adds a neighbor point to the group.
+            </summary>
+            <param name="x">The X coordinate of the neighbour.</param>
+            <param name="y">The Y coordinate of the neighbour.</param>
+        </member>
+        <member name="P:Go.Group.Content">
+            <summary>
+            Gets the content of the group.
+            </summary>
+        </member>
+        <member name="P:Go.Group.Neighbours">
+            <summary>
+            Gets an enumerator for the neighboring coordinates of the group.
+            </summary>
+        </member>
+        <member name="P:Go.Group.Points">
+            <summary>
+            Gets an enumerator for the coordinates contained in this group.
+            </summary>
+        </member>
+        <member name="P:Go.Group.IsDead">
+            <summary>
+            Gets or sets whether this group is dead for the purposes of scoring.
+            </summary>
+        </member>
+        <member name="P:Go.Group.Territory">
+            <summary>
+            Gets the territory ownership color of this group of empty spaces.
+            </summary>
+        </member>
+        <member name="T:Go.SGFSequence">
+            <summary>
+            Represents an SGF sequence, see the SGF specification at
+            <a href="http://www.red-bean.com/sgf">http://www.red-bean.com/sgf</a>
+            </summary>
+        </member>
+        <member name="F:Go.SGFSequence.Nodes">
+            <summary>
+            Contains a list of SGF nodes.
+            </summary>
+        </member>
+        <member name="T:Go.SGFProperty">
+            <summary>
+            Represents an SGF property, see the SGF specification at
+            <a href="http://www.red-bean.com/sgf">http://www.red-bean.com/sgf</a>
+            </summary>
+        </member>
+        <member name="F:Go.SGFProperty.Name">
+            <summary>
+            Contains the property name.
+            </summary>
+        </member>
+        <member name="F:Go.SGFProperty.Values">
+            <summary>
+            Contains a list of SGF property-value objects.
+            </summary>
+        </member>
+        <member name="P:Go.SGFProperty.IsMove">
+            <summary>
+            Returns true if this property is a move property.
+            </summary>
+        </member>
+        <member name="P:Go.SGFProperty.IsSetup">
+            <summary>
+            Returns true if this property is a setup property.
+            </summary>
+        </member>
+        <member name="P:Go.SGFProperty.IsFileFormat">
+            <summary>
+            Returns true if this property is a file format property.
+            </summary>
+        </member>
+        <member name="P:Go.SGFProperty.Priority">
+            <summary>
+            Returns the property priority when writing an SGF file.
+            </summary>
+        </member>
+        <member name="T:Go.Content">
+            <summary>
+            Used to represent the content of a board position, or the color of territory.
+            </summary>
+        </member>
+        <member name="F:Go.Content.Empty">
+            <summary>
+            An empty board position, or unowned territory.
+            </summary>
+        </member>
+        <member name="F:Go.Content.Black">
+            <summary>
+            A black board position, or black territory.
+            </summary>
+        </member>
+        <member name="F:Go.Content.White">
+            <summary>
+            A white board position, or white territory.
+            </summary>
+        </member>
+        <member name="T:Go.SuperKoComparer">
+            <summary>
+            This class implements IEqualityComparer&lt;Board&gt; that compares boards by
+            their content. The purpose of this class is to enable the super-ko rule.
+            </summary>
+        </member>
+        <member name="M:Go.SuperKoComparer.Equals(Go.Board,Go.Board)">
+            <summary>
+            Returns true if two Board objects have the same content.
+            </summary>
+            <param name="x">The first Board object.</param>
+            <param name="y">The second Board object.</param>
+            <returns>True if the Boards have the same content.</returns>
+        </member>
+        <member name="M:Go.SuperKoComparer.GetHashCode(Go.Board)">
+            <summary>
+            Returns a hash code based on the content of the board.
+            </summary>
+            <param name="obj">The Board object.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Go.GameInfo">
+            <summary>
+            Provides information used to create the root node of a game tree.
+            </summary>
+        </member>
+        <member name="M:Go.GameInfo.#ctor">
+            <summary>
+            Constructs a default GameInfo object, with 0 handicap, 5.5 komi 19x19 board and
+            black as the starting player.
+            </summary>
+        </member>
+        <member name="P:Go.GameInfo.Handicap">
+            <summary>
+            Gets or sets the handicap value.
+            </summary>
+        </member>
+        <member name="P:Go.GameInfo.Komi">
+            <summary>
+            Gets or sets the komi value.
+            </summary>
+        </member>
+        <member name="P:Go.GameInfo.BoardSizeX">
+            <summary>
+            Gets or sets the horizontal board size.
+            </summary>
+        </member>
+        <member name="P:Go.GameInfo.BoardSizeY">
+            <summary>
+            Gets or sets the vertical board size.
+            </summary>
+        </member>
+        <member name="P:Go.GameInfo.StartingPlayer">
+            <summary>
+            Gets or sets the color of the starting player.
+            </summary>
+        </member>
+        <member name="T:Go.ContentExtensions">
+            <summary>
+            Provides extension methods for the Go.Content enum.
+            </summary>
+        </member>
+        <member name="M:Go.ContentExtensions.Opposite(Go.Content)">
+            <summary>
+            Returns the opposite color.
+            </summary>
+            <param name="c">The color whose opposite is requested.
+            Must be Content.Black or Content.White.</param>
+            <returns>The opposite color.</returns>
+        </member>
+        <member name="T:Go.SGFPropValue">
+            <summary>
+            Represents an SGF property-value, see the SGF specification at
+            <a href="http://www.red-bean.com/sgf">http://www.red-bean.com/sgf</a>
+            </summary>
+        </member>
+        <member name="F:Go.SGFPropValue.Value">
+            <summary>
+            Contains the property value.
+            </summary>
+        </member>
+        <member name="M:Go.SGFPropValue.#ctor(System.String)">
+            <summary>
+            Construct an SGFPropValue object using the specified value.
+            </summary>
+            <param name="v">The value of the SGFPropValue.</param>
+        </member>
+        <member name="P:Go.SGFPropValue.IsComposed">
+            <summary>
+            Returns true if the property value is a composed value (value ':' value).
+            </summary>
+        </member>
+        <member name="P:Go.SGFPropValue.ValX">
+            <summary>
+            Gets the first value of a composed value.
+            </summary>
+        </member>
+        <member name="P:Go.SGFPropValue.ValY">
+            <summary>
+            Gets the second value of a composed value.
+            </summary>
+        </member>
+        <member name="P:Go.SGFPropValue.NumX">
+            <summary>
+            Gets the first integer of a composed value.
+            </summary>
+        </member>
+        <member name="P:Go.SGFPropValue.NumY">
+            <summary>
+            Gets the second integer of a composed value.
+            </summary>
+        </member>
+        <member name="P:Go.SGFPropValue.Num">
+            <summary>
+            Gets the property value as an integer.
+            </summary>
+        </member>
+        <member name="P:Go.SGFPropValue.Double">
+            <summary>
+            Gets the property value as a real number.
+            </summary>
+        </member>
+        <member name="P:Go.SGFPropValue.Move">
+            <summary>
+            Gets the property value as a move object (Point).
+            </summary>
+        </member>
+        <member name="P:Go.SGFPropValue.MoveA">
+            <summary>
+            Gets the first move object of a composed value.
+            </summary>
+        </member>
+        <member name="P:Go.SGFPropValue.MoveB">
+            <summary>
+            Gets the second move object of a composed value.
+            </summary>
+        </member>
+        <member name="P:Go.SGFPropValue.Turn">
+            <summary>
+            Gets the property value as a color object (Content enum).
+            </summary>
+        </member>
+        <member name="T:Go.SGFGameTree">
+            <summary>
+            Represents an SGF game-tree, see the SGF specification at
+            <a href="http://www.red-bean.com/sgf">http://www.red-bean.com/sgf</a>
+            </summary>
+        </member>
+        <member name="F:Go.SGFGameTree.Sequence">
+            <summary>
+            Contains the SGF sequence.
+            </summary>
+        </member>
+        <member name="F:Go.SGFGameTree.GameTrees">
+            <summary>
+            Contains a list of SGF game-tree objects.
+            </summary>
+        </member>
+        <member name="T:Go.BoardExtensions">
+            <summary>
+            Provides extension methods for the Go.Board class.
+            </summary>
+        </member>
+        <member name="M:Go.BoardExtensions.SetHandicap(Go.Board,System.Int32)">
+            <summary>
+            Lays out the handicap stones on a 19x19 board.
+            </summary>
+            <param name="board">A board object of size 19x19.</param>
+            <param name="handicap">The handicap value, between 1 and 9 inclusive.</param>
+        </member>
+        <member name="T:Go.Board">
+            <summary>
+            Encapsulates a board position, without any game context. This object also
+            supports scoring mode by setting the IsScoring property to true.
+            </summary>
+        </member>
+        <member name="M:Go.Board.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Constructs a board object of specified horizontal and vertical size.
+            </summary>
+            <param name="sx">The horizontal size of the board.</param>
+            <param name="sy">The vertical size of the board.</param>
+        </member>
+        <member name="M:Go.Board.#ctor(Go.Board)">
+            <summary>
+            Constructs a board object from an existing board object, copying its content.
+            </summary>
+            <param name="fromBoard">The source board object.</param>
+        </member>
+        <member name="M:Go.Board.#ctor(System.Int32[])">
+            <summary>
+            Construct a board object from a parameter array. Each parameter may be
+            0 for empty, 1 for black or 2 for white, and the number of parameters must
+            be a square of a natural number. The board size will be a square whose side
+            length is the square root of the number of parameters.
+            </summary>
+            <param name="c">The board content (0-empty, 1-black, 2-white).</param>
+        </member>
+        <member name="M:Go.Board.GetContentAt(Go.Point)">
+            <summary>
+            Gets the board content at the specified point.
+            </summary>
+            <param name="n">The coordinates of the position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Go.Board.GetContentAt(System.Int32,System.Int32)">
+            <summary>
+            Gets the board content at the specified point.
+            </summary>
+            <param name="x">The X coordinate of the position.</param>
+            <param name="y">The Y coordinate of the position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Go.Board.SetContentAt(Go.Point,Go.Content)">
+            <summary>
+            Sets the board content at the specified point, this is not considered a
+            game move, but rather a setup move.
+            </summary>
+            <param name="p">The coordinates of the position.</param>
+            <param name="content">The new content at the position.</param>
+        </member>
+        <member name="M:Go.Board.SetContentAt(System.Int32,System.Int32,Go.Content)">
+            <summary>
+            Sets the board content at the specified point, this is not considered a
+            game move, but rather a setup move.
+            </summary>
+            <param name="x">The X coordinate of the position.</param>
+            <param name="y">The Y coordinate of the position.</param>
+            <param name="c">The new content at the position.</param>
+        </member>
+        <member name="M:Go.Board.GetGroupAt(Go.Point)">
+            <summary>
+            Gets the group including the board content at the specified position.
+            </summary>
+            <param name="n">The coordinates of the position.</param>
+            <returns>A group object containing a list of points.</returns>
+        </member>
+        <member name="M:Go.Board.GetGroupAt(System.Int32,System.Int32)">
+            <summary>
+            Gets the group including the board content at the specified position.
+            </summary>
+            <param name="x">The X coordinate of the position.</param>
+            <param name="y">The Y coordinate of the position.</param>
+            <returns>A group object containing a list of points.</returns>
+        </member>
+        <member name="M:Go.Board.GetLiberties(Go.Group)">
+            <summary>
+            Gets the liberty count of the specified group.
+            </summary>
+            <param name="group">The group object.</param>
+            <returns>The number of liberties of the specified group.</returns>
+        </member>
+        <member name="M:Go.Board.GetLiberties(System.Int32,System.Int32)">
+            <summary>
+            Gets the liberty count of the group containing the board content at
+            the specified point.
+            </summary>
+            <param name="x">The X coordinate of the position.</param>
+            <param name="y">The Y coordinate of the position.</param>
+            <returns>The number of liberties.</returns>
+        </member>
+        <member name="M:Go.Board.GetLiberties(Go.Point)">
+            <summary>
+            Gets the liberty count of the group containing the board content at
+            the specified point.
+            </summary>
+            <param name="n">The coordinates of the position.</param>
+            <returns>The number of liberties.</returns>
+        </member>
+        <member name="M:Go.Board.SetDeadGroup(Go.Point)">
+            <summary>
+            Marks a group as dead for the purposes of scoring. This method has no effect if
+            the board is not in scoring mode (see the IsScoring property).
+            </summary>
+            <param name="n">The coordinates of the position of a stone in the group.</param>
+        </member>
+        <member name="M:Go.Board.SetDeadGroup(System.Int32,System.Int32)">
+            <summary>
+            Marks a group as dead for the purposes of scoring. This method has no effect if
+            the board is not in scoring mode (see the IsScoring property).
+            </summary>
+            <param name="x">The X coordinate of a position belonging to the group.</param>
+            <param name="y">The Y coordinate of a position belonging to the group.</param>
+        </member>
+        <member name="M:Go.Board.ResetScoring">
+            <summary>
+            Resets the scoring process, unmarking dead groups.
+            </summary>
+        </member>
+        <member name="M:Go.Board.ToString">
+            <summary>
+            Returns a multi-line string representation of the board with the scoring
+            state. Each spot is composed of two characters. The first is one of [.XO]
+            representing an empty, black or white board content respectively. The second
+            is one of [.xoD] representing unowned, black or white territory, or D for a
+            dead group.
+            </summary>
+            <returns>Returns the multi-line string representation of the board.</returns>
+        </member>
+        <member name="P:Go.Board.SizeX">
+            <summary>
+            Gets the horizontal size of the board.
+            </summary>
+        </member>
+        <member name="P:Go.Board.SizeY">
+            <summary>
+            Gets the vertical size of the board.
+            </summary>
+        </member>
+        <member name="P:Go.Board.IsScoring">
+            <summary>
+            Gets or sets a flag indicating whether this board is in scoring mode.
+            If this property is changed from false to true, the scoring cache is cleared,
+            and all dead groups are reinstated. To reset the scoring process, set this
+            property to false and then to true again, or alternatively call ResetScoring.
+            </summary>
+        </member>
+        <member name="P:Go.Board.Territory">
+            <summary>
+            Gets a Dictionary&lt;Content,int&gt; containing the score for each side. The score
+            includes dead groups but not including captured stones (no game context).
+            If SetDeadGroup is called, this property must be retrieved again to get
+            the updated score.
+            </summary>
+        </member>
+        <member name="P:Go.Board.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets or sets the board content at the specified point. Changing the board
+            content using this property is not considered a game move, but rather a
+            setup move.
+            </summary>
+            <param name="x">The X coordinate of the position.</param>
+            <param name="y">The Y coordinate of the position.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Go.Board.Item(Go.Point)">
+            <summary>
+            Gets or sets the board content at the specified point. Changing the board
+            content using this property is not considered a game move, but rather a
+            setup move.
+            </summary>
+            <param name="n">The coordinates of the position.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Go.Game">
+            <summary>
+            Represents a game tree complete with variations. A game tree root is identified
+            by a non-null GameInfo property. The root of a specified game may be obtained
+            using the Root property.
+            </summary>
+        </member>
+        <member name="F:Go.Game.SuperKoComparer">
+            <summary>
+            The singleton comparer for super-ko cases. There is no need for more than
+            one instance of this.
+            </summary>
+        </member>
+        <member name="M:Go.Game.#ctor(Go.GameInfo)">
+            <summary>
+            Constructs a root game object based on a GameInfo object.
+            </summary>
+            <param name="gi">The GameInfo object.</param>
+        </member>
+        <member name="M:Go.Game.#ctor(Go.SGFGameTree)">
+            <summary>
+            Constructs a root game object, along with a complete game tree from
+            the specified SGFGameTree object.
+            </summary>
+            <param name="sgfGameTree">The SGF game tree object.</param>
+        </member>
+        <member name="M:Go.Game.#ctor(Go.Game)">
+            <summary>
+            Constructs a Game object from an existing Game object. This constructor is used when making
+            game moves.
+            </summary>
+            <param name="fromGame">The Game object before the move.</param>
+        </member>
+        <member name="M:Go.Game.#ctor(Go.Board,Go.Content)">
+            <summary>
+            Constructs a Game object from a Board object and a turn to play.
+            </summary>
+            <param name="bs">The source Board.</param>
+            <param name="turn">The player's color whose turn it is to play.</param>
+        </member>
+        <member name="M:Go.Game.MakeMove(Go.Point)">
+            <summary>
+            Makes a move and returns a new Game object representing the state after the
+            move. The move is carried out whether it is legal or illegal (for example,
+            an overwrite move). The color of the move is determined by the Turn property.
+            </summary>
+            <param name="n">The coordinates of the move.</param>
+            <returns>A game object representing the state of the game after the mvoe.</returns>
+        </member>
+        <member name="M:Go.Game.MakeMove(Go.Point,System.Boolean@)">
+            <summary>
+            Makes a move and returns a new Game object representing the state after the
+            move. The move is carried out whether it is legal or illegal (for example,
+            an overwrite move). The color of the move is determined by the Turn property.
+            If the move was illegal (suicide, violating super-ko, or an overwrite), the
+            method sets the legal parameter to false, otherwise it is set to true.
+            </summary>
+            <param name="n">The coordinates of the move.</param>
+            <param name="legal">Set to true if the move was legal, false otherwise.</param>
+            <returns>A game object representing the state of the game after the mvoe.</returns>
+        </member>
+        <member name="M:Go.Game.MakeMove(System.Int32,System.Int32)">
+            <summary>
+            Makes a move and returns a new Game object representing the state after the
+            move. The move is carried out whether it is legal or illegal (for example,
+            an overwrite move). The color of the move is determined by the Turn property.
+            </summary>
+            <param name="x">The X coordinate of the move.</param>
+            <param name="y">The Y coordinate of the move.</param>
+            <returns>A game object representing the state of the game after the mvoe.</returns>
+        </member>
+        <member name="M:Go.Game.MakeMove(System.Int32,System.Int32,System.Boolean@)">
+            <summary>
+            Makes a move and returns a new Game object representing the state after the
+            move. The move is carried out whether it is legal or illegal (for example,
+            an overwrite move). The color of the move is determined by the Turn property.
+            If the move was illegal (suicide, violating super-ko, or an overwrite), the
+            method sets the legal parameter to false, otherwise it is set to true.
+            </summary>
+            <param name="x">The X coordinate of the move.</param>
+            <param name="y">The Y coordinate of the move.</param>
+            <param name="legal">Set to true if the move was legal, false otherwise.</param>
+            <returns>A game object representing the state of the game after the mvoe.</returns>
+        </member>
+        <member name="M:Go.Game.InternalMakeMove(System.Int32,System.Int32)">
+            <summary>
+            Perform the necessary operations for a move, check liberties, capture, etc.
+            </summary>
+            <param name="x">The X coordinate of the move.</param>
+            <param name="y">The Y coordinate of the move.</param>
+            <returns>True if the move was legal.</returns>
+        </member>
+        <member name="M:Go.Game.SerializeToSGF(System.IO.TextWriter)">
+            <summary>
+            Converts the game tree into SGF format.
+            </summary>
+            <param name="s">A TextWriter object that will receive the output.
+            If null, the output is returned as a string.</param>
+            <returns>The SGF game, or null if a TextWriter is provided.</returns>
+        </member>
+        <member name="M:Go.Game.SerializeFromSGF(System.String)">
+            <summary>
+            Parses an SGF game file and creates a list of games.
+            </summary>
+            <param name="path">The path to the SGF file.</param>
+            <returns>A List&lt;Game&gt; containing all game trees in the SGF file.</returns>
+        </member>
+        <member name="P:Go.Game.Board">
+            <summary>
+            Gets the board object of the current game position.
+            </summary>
+        </member>
+        <member name="P:Go.Game.Turn">
+            <summary>
+            Gets the color of the player whose turn it is to play.
+            </summary>
+        </member>
+        <member name="P:Go.Game.GameInfo">
+            <summary>
+            Gets the GameInfo object of this game. This is null except for root
+            Game objects.
+            </summary>
+        </member>
+        <member name="P:Go.Game.Move">
+            <summary>
+            Gets the coordinates of the move taken to reach this position. May be null
+            for setup positions.
+            </summary>
+        </member>
+        <member name="P:Go.Game.Root">
+            <summary>
+            Gets the root Game object of the current game.
+            </summary>
+        </member>
+        <member name="P:Go.Game.Moves">
+            <summary>
+            Gets an enumerator of the move variations in this game position.
+            </summary>
+        </member>
+        <member name="P:Go.Game.WhiteCaptures">
+            <summary>
+            Gets the number of stones white has captured
+            (the number of black stones captured).
+            </summary>
+        </member>
+        <member name="P:Go.Game.BlackCaptures">
+            <summary>
+            Gets the number of stones black as captured
+            (the number of white stones captured).
+            </summary>
+        </member>
+        <member name="T:Go.TextReaderExtensions">
+            <summary>
+            Provides extension methods for TextReader. Contains these methods:
+            <list type="string">
+            <item>EatWS</item>
+            </list>
+            </summary>
+        </member>
+        <member name="M:Go.TextReaderExtensions.EatWS(System.IO.TextReader)">
+            <summary>
+            Reads and ignores white space characters, until a non-whitespace
+            is encounteres.
+            </summary>
+            <param name="tr">The TextReader object.</param>
+        </member>
+        <member name="T:Go.SGFCollection">
+            <summary>
+            Represents an SGF collection, see the SGF specification at
+            <a href="http://www.red-bean.com/sgf">http://www.red-bean.com/sgf</a>
+            </summary>
+        </member>
+        <member name="F:Go.SGFCollection.GameTrees">
+            <summary>
+            Contains a list of SGF game-tree objects.
+            </summary>
+        </member>
+        <member name="M:Go.SGFCollection.Read(System.IO.TextReader)">
+            <summary>
+            Parse an SGFCollection object from a TextReader.
+            </summary>
+            <param name="sr">The source TextReader.</param>
+        </member>
+        <member name="T:Go.Point">
+            <summary>
+            Represents a pair of board coordinates (x and y).
+            </summary>
+        </member>
+        <member name="F:Go.Point.x">
+            <summary>
+            The X value of the coordinate.
+            </summary>
+        </member>
+        <member name="F:Go.Point.y">
+            <summary>
+            The Y value of the coordinate.
+            </summary>
+        </member>
+        <member name="M:Go.Point.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Constructs a Point object from the specified coordinates.
+            </summary>
+            <param name="xx">The X coordinate.</param>
+            <param name="yy">The Y coordinate.</param>
+        </member>
+        <member name="M:Go.Point.ToString">
+            <summary>
+            Returns a string representation of the Point in the format of (x,y).
+            </summary>
+            <returns>Returns a string representation of the Point in the format of (x,y).</returns>
+        </member>
+        <member name="M:Go.Point.GetHashCode">
+            <summary>
+            Returns a hash code based on the x and y values of the object.
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

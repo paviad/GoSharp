@@ -12,7 +12,14 @@ namespace Go
     /// </summary>
     public class SGFGameTree
     {
+        /// <summary>
+        /// Contains the SGF sequence.
+        /// </summary>
         public SGFSequence Sequence = new SGFSequence();
+
+        /// <summary>
+        /// Contains a list of SGF game-tree objects.
+        /// </summary>
         public List<SGFGameTree> GameTrees = new List<SGFGameTree>();
 
         internal void Read(TextReader sr)

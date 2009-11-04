@@ -6,6 +6,12 @@ using System.IO;
 
 namespace Go
 {
+    /// <summary>
+    /// Provides extension methods for TextReader. Contains these methods:
+    /// <list type="string">
+    /// <item>EatWS</item>
+    /// </list>
+    /// </summary>
     public static class TextReaderExtensions
     {
         /// <summary>

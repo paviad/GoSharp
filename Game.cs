@@ -99,6 +99,12 @@ namespace Go
             InitializeFromGameInfo();
             CreateGameTree(sgfGameTree, this);
         }
+
+        /// <summary>
+        /// Constructs a Game object from an existing Game object. This constructor is used when making
+        /// game moves.
+        /// </summary>
+        /// <param name="fromGame">The Game object before the move.</param>
         protected Game(Game fromGame)
         {
             Board = new Board(fromGame.Board);
@@ -108,6 +114,12 @@ namespace Go
             foreach (var p in fromGame.superKoSet) superKoSet.Add(p);
             Root = fromGame.Root;
         }
+
+        /// <summary>
+        /// Constructs a Game object from a Board object and a turn to play.
+        /// </summary>
+        /// <param name="bs">The source Board.</param>
+        /// <param name="turn">The player's color whose turn it is to play.</param>
         protected Game(Board bs, Content turn)
         {
             Board = new Board(bs);
@@ -183,6 +195,12 @@ namespace Go
             return g;
         }
 
+        /// <summary>
+        /// Perform the necessary operations for a move, check liberties, capture, etc.
+        /// </summary>
+        /// <param name="x">The X coordinate of the move.</param>
+        /// <param name="y">The Y coordinate of the move.</param>
+        /// <returns>True if the move was legal.</returns>
         protected bool InternalMakeMove(int x, int y)
         {
             bool legal = true;

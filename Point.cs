@@ -31,11 +31,19 @@ namespace Go
             y = yy;
         }
 
+        /// <summary>
+        /// Returns a string representation of the Point in the format of (x,y).
+        /// </summary>
+        /// <returns>Returns a string representation of the Point in the format of (x,y).</returns>
         public override string ToString()
         {
             return "(" + x + "," + y + ")";
         }
 
+        /// <summary>
+        /// Returns a hash code based on the x and y values of the object.
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return (x << 5) + y;

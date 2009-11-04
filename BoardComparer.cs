@@ -11,6 +11,12 @@ namespace Go
     /// </summary>
     public class SuperKoComparer : IEqualityComparer<Board>
     {
+        /// <summary>
+        /// Returns true if two Board objects have the same content.
+        /// </summary>
+        /// <param name="x">The first Board object.</param>
+        /// <param name="y">The second Board object.</param>
+        /// <returns>True if the Boards have the same content.</returns>
         public bool Equals(Board x, Board y)
         {
             if (x.SizeX != y.SizeX || x.SizeY != y.SizeY) return false;
@@ -24,6 +30,11 @@ namespace Go
             return true;
         }
 
+        /// <summary>
+        /// Returns a hash code based on the content of the board.
+        /// </summary>
+        /// <param name="obj">The Board object.</param>
+        /// <returns></returns>
         public int GetHashCode(Board obj)
         {
             return obj.GetContentHashCode();

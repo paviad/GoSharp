@@ -12,13 +12,34 @@ namespace Go
     /// </summary>
     public class SGFProperty
     {
+        /// <summary>
+        /// Contains the property name.
+        /// </summary>
         public string Name;
+
+        /// <summary>
+        /// Contains a list of SGF property-value objects.
+        /// </summary>
         public List<SGFPropValue> Values = new List<SGFPropValue>();
 
+        /// <summary>
+        /// Returns true if this property is a move property.
+        /// </summary>
         public bool IsMove { get { return Name == "W" || Name == "B"; } }
+
+        /// <summary>
+        /// Returns true if this property is a setup property.
+        /// </summary>
         public bool IsSetup { get { return Name == "AE" || Name == "AB" || Name == "AW" || Name == "PL"; } }
+
+        /// <summary>
+        /// Returns true if this property is a file format property.
+        /// </summary>
         public bool IsFileFormat { get { return Name == "FF"; } }
 
+        /// <summary>
+        /// Returns the property priority when writing an SGF file.
+        /// </summary>
         public int Priority
         {
             get

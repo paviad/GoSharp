@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Go
 {
+    /// <summary>
+    /// Provides extension methods for the Go.Board class.
+    /// </summary>
     public static class BoardExtensions
     {
         /// <summary>

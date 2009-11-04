@@ -11,15 +11,49 @@ namespace Go
     /// </summary>
     public class SGFPropValue
     {
+        /// <summary>
+        /// Contains the property value.
+        /// </summary>
         public string Value;
 
+        /// <summary>
+        /// Returns true if the property value is a composed value (value ':' value).
+        /// </summary>
         public bool IsComposed { get { return Value.Contains(':'); } }
+
+        /// <summary>
+        /// Gets the first value of a composed value.
+        /// </summary>
         public string ValX { get { return Value.Split(':')[0]; } }
+
+        /// <summary>
+        /// Gets the second value of a composed value.
+        /// </summary>
         public string ValY { get { return Value.Split(':')[1]; } }
+
+        /// <summary>
+        /// Gets the first integer of a composed value.
+        /// </summary>
         public int NumX { get { return int.Parse(ValX); } }
+
+        /// <summary>
+        /// Gets the second integer of a composed value.
+        /// </summary>
         public int NumY { get { return int.Parse(ValY); } }
+
+        /// <summary>
+        /// Gets the property value as an integer.
+        /// </summary>
         public int Num { get { return int.Parse(Value); } }
+
+        /// <summary>
+        /// Gets the property value as a real number.
+        /// </summary>
         public double Double { get { return double.Parse(Value); } }
+
+        /// <summary>
+        /// Gets the property value as a move object (Point).
+        /// </summary>
         public Point Move
         {
             get
@@ -28,6 +62,10 @@ namespace Go
                 return new Point(bb[0] - 97, bb[1] - 97);
             }
         }
+
+        /// <summary>
+        /// Gets the first move object of a composed value.
+        /// </summary>
         public Point MoveA
         {
             get
@@ -36,6 +74,10 @@ namespace Go
                 return new Point(bb[0] - 97, bb[1] - 97);
             }
         }
+
+        /// <summary>
+        /// Gets the second move object of a composed value.
+        /// </summary>
         public Point MoveB
         {
             get
@@ -44,6 +86,10 @@ namespace Go
                 return new Point(bb[0] - 97, bb[1] - 97);
             }
         }
+
+        /// <summary>
+        /// Gets the property value as a color object (Content enum).
+        /// </summary>
         public Content Turn
         {
             get
@@ -52,6 +98,10 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Construct an SGFPropValue object using the specified value.
+        /// </summary>
+        /// <param name="v">The value of the SGFPropValue.</param>
         public SGFPropValue(string v)
         {
             Value = v;
