@@ -8,7 +8,9 @@ namespace Go
     /// <summary>
     /// Represents a group of stones (or empty spaces) on a board object. This
     /// object is context-free, i.e. it is not associated with a specific board.
-    /// In essence it is simply a set of board coordinates.
+    /// In essence it is simply a set of board coordinates, with an associated
+    /// content (black, white or empty), and state (dead or alive for scoring
+    /// purposes).
     /// </summary>
     public class Group
     {
@@ -49,7 +51,7 @@ namespace Go
         /// <summary>
         /// Gets the territory ownership color of this group of empty spaces.
         /// </summary>
-        public Content Territory { get; set; }
+        public Content Territory { get; internal set; }
 
         /// <summary>
         /// Constructs a group object of specified content.
@@ -82,7 +84,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Adds a neighbor point to the group.
+        /// Adds a neighbour point to the group.
         /// </summary>
         /// <param name="x">The X coordinate of the neighbour.</param>
         /// <param name="y">The Y coordinate of the neighbour.</param>

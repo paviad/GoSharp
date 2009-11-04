@@ -51,7 +51,7 @@ namespace Go
 
         /// <summary>
         /// Gets a Dictionary&lt;Content,int&gt; containing the score for each side. The score
-        /// includes dead groups but not including captured stones (no game context).
+        /// includes dead groups but does not include captured stones (no game context).
         /// If SetDeadGroup is called, this property must be retrieved again to get
         /// the updated score.
         /// </summary>
@@ -101,7 +101,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Constructs a board object from an existing board object, copying its content.
+        /// Constructs a board object from an existing board object, copying its size and content.
         /// </summary>
         /// <param name="fromBoard">The source board object.</param>
         public Board(Board fromBoard)

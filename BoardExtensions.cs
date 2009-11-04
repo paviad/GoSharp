@@ -22,9 +22,9 @@ namespace Go
             {
                 parr = new List<Point> {
                     new Point(3,3),
-                    new Point(3,15),
                     new Point(15,15),
                     new Point(15,3),
+                    new Point(3,15),
                     new Point(8,8)
                 };
             }
@@ -32,9 +32,9 @@ namespace Go
             {
                 parr = new List<Point> {
                     new Point(3,3),
-                    new Point(3,15),
                     new Point(15,15),
                     new Point(15,3),
+                    new Point(3,15),
                     new Point(3,8),
                     new Point(15,8),
                     new Point(8,8)
@@ -44,9 +44,9 @@ namespace Go
             {
                 parr = new List<Point> {
                     new Point(3,3),
-                    new Point(3,15),
                     new Point(15,15),
                     new Point(15,3),
+                    new Point(3,15),
                     new Point(3,8),
                     new Point(15,8),
                     new Point(8,3),

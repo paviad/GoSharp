@@ -51,6 +51,12 @@ namespace Go
         public Point? Move { get; private set; }
 
         /// <summary>
+        /// Gets a flag indicating whether the move used to reach this board was legal.
+        /// This property may be null if this board position is the result of only setup moves.
+        /// </summary>
+        public bool? IsLegal { get; private set; }
+
+        /// <summary>
         /// Gets the root Game object of the current game.
         /// </summary>
         public Game Root { get; private set; }
@@ -73,7 +79,7 @@ namespace Go
         public int WhiteCaptures { get { return captures[Content.White]; } }
 
         /// <summary>
-        /// Gets the number of stones black as captured
+        /// Gets the number of stones black has captured
         /// (the number of white stones captured).
         /// </summary>
         public int BlackCaptures { get { return captures[Content.Black]; } }
@@ -119,7 +125,7 @@ namespace Go
         /// Constructs a Game object from a Board object and a turn to play.
         /// </summary>
         /// <param name="bs">The source Board.</param>
-        /// <param name="turn">The player's color whose turn it is to play.</param>
+        /// <param name="turn">The color of the player whose turn it is to play.</param>
         protected Game(Board bs, Content turn)
         {
             Board = new Board(bs);
@@ -139,9 +145,11 @@ namespace Go
         /// Makes a move and returns a new Game object representing the state after the
         /// move. The move is carried out whether it is legal or illegal (for example,
         /// an overwrite move). The color of the move is determined by the Turn property.
+        /// The legality of the move may be determined by examining the IsLegal property
+        /// of the returned object.
         /// </summary>
         /// <param name="n">The coordinates of the move.</param>
-        /// <returns>A game object representing the state of the game after the mvoe.</returns>
+        /// <returns>A game object representing the state of the game after the move.</returns>
         public Game MakeMove(Point n)
         {
             return MakeMove(n.x, n.y);
@@ -156,7 +164,7 @@ namespace Go
         /// </summary>
         /// <param name="n">The coordinates of the move.</param>
         /// <param name="legal">Set to true if the move was legal, false otherwise.</param>
-        /// <returns>A game object representing the state of the game after the mvoe.</returns>
+        /// <returns>A game object representing the state of the game after the move.</returns>
         public Game MakeMove(Point n, out bool legal)
         {
             return MakeMove(n.x, n.y, out legal);
@@ -166,10 +174,12 @@ namespace Go
         /// Makes a move and returns a new Game object representing the state after the
         /// move. The move is carried out whether it is legal or illegal (for example,
         /// an overwrite move). The color of the move is determined by the Turn property.
+        /// The legality of the move may be determined by examining the IsLegal property
+        /// of the returned object.
         /// </summary>
         /// <param name="x">The X coordinate of the move.</param>
         /// <param name="y">The Y coordinate of the move.</param>
-        /// <returns>A game object representing the state of the game after the mvoe.</returns>
+        /// <returns>A game object representing the state of the game after the move.</returns>
         public Game MakeMove(int x, int y)
         {
             bool dummy;
@@ -186,7 +196,7 @@ namespace Go
         /// <param name="x">The X coordinate of the move.</param>
         /// <param name="y">The Y coordinate of the move.</param>
         /// <param name="legal">Set to true if the move was legal, false otherwise.</param>
-        /// <returns>A game object representing the state of the game after the mvoe.</returns>
+        /// <returns>A game object representing the state of the game after the move.</returns>
         public Game MakeMove(int x, int y, out bool legal)
         {
             var g = new Game(this);
@@ -196,7 +206,8 @@ namespace Go
         }
 
         /// <summary>
-        /// Perform the necessary operations for a move, check liberties, capture, etc.
+        /// Perform the necessary operations for a move, check liberties, capture, etc. Also
+        /// updates the Move and IsLegal properties.
         /// </summary>
         /// <param name="x">The X coordinate of the move.</param>
         /// <param name="y">The Y coordinate of the move.</param>
@@ -205,6 +216,7 @@ namespace Go
         {
             bool legal = true;
             Content oturn = Turn.Opposite();
+            if (Board[x, y] != Content.Empty) legal = false; // Overwrite move
             Board[x, y] = oturn;
             Move = new Point(x, y);
             var capturedGroups = Board.GetCapturedGroups(x, y);
@@ -216,10 +228,11 @@ namespace Go
             else captures[oturn] += Board.Capture(capturedGroups);
             if (superKoSet != null)
             {
-                if (superKoSet.Contains(Board, SuperKoComparer))
+                if (superKoSet.Contains(Board, SuperKoComparer)) // Violates super-ko
                     legal = false;
                 superKoSet.Add(Board);
             }
+            IsLegal = legal;
             return legal;
         }
 
