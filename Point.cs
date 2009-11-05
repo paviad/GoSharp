@@ -48,5 +48,38 @@ namespace Go
         {
             return (x << 5) + y;
         }
+
+        /// <summary>
+        /// Converts a point to SGF move format (e.g. 2,3 to "cd").
+        /// </summary>
+        /// <param name="x">The X coordinate.</param>
+        /// <param name="y">The Y coordinate.</param>
+        /// <returns>The point in SGF format.</returns>
+        public static string ConvertToSGF(int x, int y)
+        {
+            byte[] b = new byte[2] { (byte)(x + 97), (byte)(y + 97) };
+            return ASCIIEncoding.ASCII.GetString(b);
+        }
+
+        /// <summary>
+        /// Converts a point to SGF move format (e.g. 2,3 to "cd").
+        /// </summary>
+        /// <param name="pnt">The coordinates.</param>
+        /// <returns>The point in SGF format.</returns>
+        public static string ConvertToSGF(Point pnt)
+        {
+            return ConvertToSGF(pnt.x, pnt.y);
+        }
+
+        /// <summary>
+        /// Converts an SGF format point to a Point object.
+        /// </summary>
+        /// <param name="sgf">The point in SGF format.</param>
+        /// <returns>The Point object representing the position.</returns>
+        public static Point ConvertFromSGF(string sgf)
+        {
+            var bb = ASCIIEncoding.ASCII.GetBytes(sgf);
+            return new Point(bb[0] - 97, bb[1] - 97);
+        }
     }
 }

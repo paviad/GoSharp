@@ -58,8 +58,7 @@ namespace Go
         {
             get
             {
-                var bb = ASCIIEncoding.ASCII.GetBytes(Value);
-                return new Point(bb[0] - 97, bb[1] - 97);
+                return Point.ConvertFromSGF(Value);
             }
         }
 
@@ -70,8 +69,7 @@ namespace Go
         {
             get
             {
-                var bb = ASCIIEncoding.ASCII.GetBytes(ValX);
-                return new Point(bb[0] - 97, bb[1] - 97);
+                return Point.ConvertFromSGF(ValX);
             }
         }
 
@@ -82,8 +80,7 @@ namespace Go
         {
             get
             {
-                var bb = ASCIIEncoding.ASCII.GetBytes(ValY);
-                return new Point(bb[0] - 97, bb[1] - 97);
+                return Point.ConvertFromSGF(ValY);
             }
         }
 

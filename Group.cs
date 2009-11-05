@@ -92,5 +92,18 @@ namespace Go
         {
             neighbours.Add(new Point(x, y));
         }
+
+        /// <summary>
+        /// Returns a string representation of the group as a list of points.
+        /// </summary>
+        /// <returns>Returns a string representation of the group as a list of points.</returns>
+        public override string ToString()
+        {
+            if (points.Count == 0) return Content.ToString() + ":{}";
+            string rc = Content.ToString() + ":{";
+            foreach (var p in points) rc += p.ToString() + ",";
+            rc = rc.Substring(0, rc.Length - 1) + "}";
+            return rc;
+        }
     }
 }

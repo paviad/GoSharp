@@ -18,6 +18,18 @@ namespace Go
         /// one instance of this.
         /// </summary>
         public static readonly SuperKoComparer SuperKoComparer = new SuperKoComparer();
+        static Dictionary<string, Content> SGFPropToColor = new Dictionary<string, Content>()
+        {
+            { "AE", Content.Empty },
+            { "AB", Content.Black },
+            { "AW", Content.White }
+        };
+        static Dictionary<Content, string> ColorToSGFProp = new Dictionary<Content, string>();
+
+        static Game()
+        {
+            foreach (var kvp in SGFPropToColor) ColorToSGFProp[kvp.Value] = kvp.Key;
+        }
 
         Dictionary<Point, Game> moves = new Dictionary<Point, Game>();
         Dictionary<Content, int> captures = new Dictionary<Content, int>()
@@ -27,6 +39,7 @@ namespace Go
         };
         HashSet<Board> superKoSet = new HashSet<Board>(SuperKoComparer);
         List<SGFProperty> sgfProperties = new List<SGFProperty>();
+        Dictionary<Content, Group> setupMoves = null;
 
         /// <summary>
         /// Gets the board object of the current game position.
@@ -49,6 +62,49 @@ namespace Go
         /// for setup positions.
         /// </summary>
         public Point? Move { get; private set; }
+
+        /// <summary>
+        /// Returns a Dictionary&lt;Content, Group&gt; with the setup moves
+        /// of the current node.
+        /// </summary>
+        public Dictionary<Content, Group> SetupMoves
+        {
+            get
+            {
+                if (setupMoves == null)
+                {
+                    setupMoves = new Dictionary<Content, Group>();
+                    foreach (var color in SGFPropToColor)
+                    {
+                        setupMoves[color.Value] = new Group(color.Value);
+                        foreach (var p in sgfProperties.Where(x => x.Name == color.Key))
+                        {
+                            Content c = color.Value;
+                            Group g = setupMoves[c];
+                            foreach (var v in p.Values)
+                            {
+                                if (v.IsComposed)
+                                {
+                                    for (int i = v.MoveA.x; i <= v.MoveB.x; i++)
+                                    {
+                                        for (int j = v.MoveA.y; j <= v.MoveB.y; j++)
+                                        {
+                                            g.AddPoint(i, j);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    g.AddPoint(v.Move.x, v.Move.y);
+                                }
+                            }
+                            setupMoves[color.Value] = g;
+                        }
+                    }
+                }
+                return setupMoves;
+            }
+        }
 
         /// <summary>
         /// Gets a flag indicating whether the move used to reach this board was legal.
@@ -206,6 +262,76 @@ namespace Go
         }
 
         /// <summary>
+        /// Adds a stone to the board as a setup move.
+        /// </summary>
+        /// <param name="p">The coordinates of the setup move.</param>
+        /// <param name="c">The color of the stone to add (or empty to clear).</param>
+        public void SetupMove(Point p, Content c)
+        {
+            SetupMove(p.x, p.y, c);
+        }
+
+        /// <summary>
+        /// Adds a stone to the board as a setup move.
+        /// </summary>
+        /// <param name="x">The X coordinate of the setup move.</param>
+        /// <param name="y">The Y coordinate of the setup move.</param>
+        /// <param name="c">The color of the stone to add (or empty to clear).</param>
+        public void SetupMove(int x, int y, Content c)
+        {
+            SGFProperty p = sgfProperties.SingleOrDefault(z => z.Name == ColorToSGFProp[c]);
+            if (p == null)
+            {
+                p = new SGFProperty() { Name = ColorToSGFProp[c] };
+                sgfProperties.Add(p);
+            }
+            SGFPropValue v = new SGFPropValue(Point.ConvertToSGF(x, y));
+            p.Values.Add(v);
+            Board[x, y] = c;
+            setupMoves = null;
+        }
+
+        /// <summary>
+        /// Adds stones to the board in a rectangular area.
+        /// </summary>
+        /// <param name="p1">The top left coordinates of the rectangle.</param>
+        /// <param name="p2">The bottom right coordinates of the rectangle.</param>
+        /// <param name="c">The color of the stone to add (or empty to clear).</param>
+        public void SetupMove(Point p1, Point p2, Content c)
+        {
+            SetupMove(p1.x, p1.y, p2.x, p2.y, c);
+        }
+
+        /// <summary>
+        /// Adds stones to the board in a rectangular area.
+        /// </summary>
+        /// <param name="x1">The left coordinate of the rectangle.</param>
+        /// <param name="y1">The top coordinate of the rectangle.</param>
+        /// <param name="x2">The right coordinate of the rectangle.</param>
+        /// <param name="y2">The bottom coordinate of the rectangle.</param>
+        /// <param name="c">The color of the stone to add (or empty to clear).</param>
+        public void SetupMove(int x1, int y1, int x2, int y2, Content c)
+        {
+            SGFProperty p = sgfProperties.SingleOrDefault(x => x.Name == ColorToSGFProp[c]);
+            if (p == null)
+            {
+                p = new SGFProperty() { Name = ColorToSGFProp[c] };
+                sgfProperties.Add(p);
+            }
+            string composed = Point.ConvertToSGF(x1, y1) + ":" + Point.ConvertToSGF(x2, y2);
+            SGFPropValue v = new SGFPropValue(composed);
+            p.Values.Add(v);
+            for (int i = x1; i <= x2; i++)
+            {
+                for (int j = y1; j <= y2; j++)
+                {
+                    Board[i, j] = c;
+                }
+            }
+            setupMoves = null;
+        }
+
+        /// <summary>
         /// Perform the necessary operations for a move, check liberties, capture, etc. Also
         /// updates the Move and IsLegal properties.
         /// </summary>
@@ -299,8 +425,8 @@ namespace Go
         {
             s.Write(";");
             s.Write(Turn == Content.White ? "W[" : "B[");
-            byte[] b = new byte[2] { (byte)(pnt.x + 97), (byte)(pnt.y + 97) };
-            s.Write(ASCIIEncoding.ASCII.GetString(b));
+            string sgf = Point.ConvertToSGF(pnt);
+            s.Write(sgf);
             s.Write("]");
         }
 

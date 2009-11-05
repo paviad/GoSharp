@@ -1,0 +1,5 @@
+﻿*** 5-Nov-2009 9:00
+Added ChangeLog.txt
+Added support for programmatically adding setup moves to a Game object. See the Game.SetupMove method and the Game.SetupMoves property.
+Implemented Group.ToString
+Centralized conversion of point coordinates to and from SGF format in the Point struct.
