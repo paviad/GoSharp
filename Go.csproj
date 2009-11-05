@@ -46,7 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoardComparer.cs" />
-    <Compile Include="BoardExtensions.cs" />
     <Compile Include="ContentExtensions.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Board.cs" />

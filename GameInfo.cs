@@ -16,6 +16,13 @@ namespace Go
         public int Handicap { get; set; }
 
         /// <summary>
+        /// Gets or sets a flag indicating whether handicap stones should be
+        /// placed in the standard positions, or whether they will be manually
+        /// placed using setup moves.
+        /// </summary>
+        public bool FreePlacedHandicap { get; set; }
+
+        /// <summary>
         /// Gets or sets the komi value.
         /// </summary>
         public double Komi { get; set; }

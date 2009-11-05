@@ -191,10 +191,54 @@ namespace Go
         private void InitializeFromGameInfo()
         {
             Board = new Board(GameInfo.BoardSizeX, GameInfo.BoardSizeY);
-            if (GameInfo.Handicap > 0)
-                Board.SetHandicap(GameInfo.Handicap);
+            if (GameInfo.Handicap > 0 && !GameInfo.FreePlacedHandicap)
+                SetHandicap(GameInfo.Handicap);
             Turn = GameInfo.StartingPlayer;
             Root = this;
+        }
+
+        private void SetHandicap(int handicap)
+        {
+            List<Point> parr;
+            if (handicap <= 5)
+            {
+                parr = new List<Point> {
+                    new Point(3,3),
+                    new Point(15,15),
+                    new Point(15,3),
+                    new Point(3,15),
+                    new Point(9,9)
+                };
+            }
+            else if (handicap <= 7)
+            {
+                parr = new List<Point> {
+                    new Point(3,3),
+                    new Point(15,15),
+                    new Point(15,3),
+                    new Point(3,15),
+                    new Point(3,9),
+                    new Point(15,9),
+                    new Point(9,9)
+                };
+            }
+            else if (handicap <= 9)
+            {
+                parr = new List<Point> {
+                    new Point(3,3),
+                    new Point(15,15),
+                    new Point(15,3),
+                    new Point(3,15),
+                    new Point(3,9),
+                    new Point(15,9),
+                    new Point(9,3),
+                    new Point(9,15),
+                    new Point(9,9)
+                };
+            }
+            else throw new InvalidCastException("Maximum handicap is 9.");
+            for (int i = 0; i < handicap; i++)
+                SetupMove(parr[i], Content.Black);
         }
 
         /// <summary>
@@ -380,7 +424,8 @@ namespace Go
             if (GameInfo != null)
             {
                 s.Write("(;FF[4]");
-                if (GameInfo.Handicap > 0) s.Write(";HA[" + GameInfo.Handicap + "]");
+                if (GameInfo.Handicap > 0) s.Write("HA[" + GameInfo.Handicap + "]");
+                if (GameInfo.StartingPlayer == Content.White) s.Write("PL[W]");
             }
             SerializeSGFProperties(s);
             if (moves.Count == 1)
@@ -471,6 +516,11 @@ namespace Go
             if (komi != null)
             {
                 gi.Komi = komi.Values[0].Double;
+            }
+            var startingPlayer = root.Sequence.Nodes[0].Properties.SingleOrDefault(x => x.Name == "PL");
+            if (startingPlayer != null)
+            {
+                gi.StartingPlayer = startingPlayer.Values[0].Turn;
             }
             return gi;
         }
