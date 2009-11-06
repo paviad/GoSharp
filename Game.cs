@@ -25,10 +25,21 @@ namespace Go
             { "AW", Content.White }
         };
         static Dictionary<Content, string> ColorToSGFProp = new Dictionary<Content, string>();
+        static Dictionary<string, Func<Game, SGFProperty, Game>> PropertyHandlers = new Dictionary<string, Func<Game, SGFProperty, Game>>();
 
         static Game()
         {
             foreach (var kvp in SGFPropToColor) ColorToSGFProp[kvp.Value] = kvp.Key;
+
+            PropertyHandlers["W"] = ((x, y) => x.HandleMove(y));
+            PropertyHandlers["B"] = ((x, y) => x.HandleMove(y));
+            PropertyHandlers["AE"] = ((x, y) => x.HandleSetup(y));
+            PropertyHandlers["AW"] = ((x, y) => x.HandleSetup(y));
+            PropertyHandlers["AB"] = ((x, y) => x.HandleSetup(y));
+            PropertyHandlers["PL"] = ((x, y) => x.HandlePlayerTurn(y));
+            PropertyHandlers["HA"] = ((x, y) => x.HandleHandicap(y));
+            PropertyHandlers["SZ"] = ((x, y) => x.HandleBoardSize(y));
+            PropertyHandlers["KM"] = ((x, y) => x.HandleKomi(y));
         }
 
         Dictionary<Point, Game> moves = new Dictionary<Point, Game>();
@@ -157,8 +168,9 @@ namespace Go
         /// <param name="sgfGameTree">The SGF game tree object.</param>
         public Game(SGFGameTree sgfGameTree)
         {
-            GameInfo = CreateGameInfoFromSGF(sgfGameTree);
-            InitializeFromGameInfo();
+            //GameInfo = CreateGameInfoFromSGF(sgfGameTree);
+            //InitializeFromGameInfo();
+            GameInfo = new GameInfo() { FreePlacedHandicap = true };
             CreateGameTree(sgfGameTree, this);
         }
 
@@ -423,9 +435,11 @@ namespace Go
             }
             if (GameInfo != null)
             {
-                s.Write("(;FF[4]");
+                s.Write("(;");
+                SerializeSGFProperties(s);
                 if (GameInfo.Handicap > 0) s.Write("HA[" + GameInfo.Handicap + "]");
                 if (GameInfo.StartingPlayer == Content.White) s.Write("PL[W]");
+                if (GameInfo.Komi != 5.5) s.Write("KM[" + GameInfo.Komi + "]");
                 if (GameInfo.BoardSizeX != 19 && GameInfo.BoardSizeY != 19)
                 {
                     if (GameInfo.BoardSizeX == GameInfo.BoardSizeY)
@@ -438,7 +452,7 @@ namespace Go
                     }
                 }
             }
-            SerializeSGFProperties(s);
+            else SerializeSGFProperties(s);
             if (moves.Count == 1)
             {
                 Point pnt = moves.First().Key;
@@ -498,86 +512,83 @@ namespace Go
             coll.Read(sr);
             List<Game> games = new List<Game>();
             foreach (var c in coll.GameTrees) games.Add(new Game(c));
+            sr.Close();
             return games;
-        }
-        private static GameInfo CreateGameInfoFromSGF(SGFGameTree root)
-        {
-            GameInfo gi = new GameInfo();
-            var size = root.Sequence.Nodes[0].Properties.SingleOrDefault(x => x.Name == "SZ");
-            if (size != null)
-            {
-                int sx, sy;
-                if (size.Values[0].IsComposed)
-                {
-                    sx = size.Values[0].NumX;
-                    sy = size.Values[0].NumY;
-                }
-                else sy = sx = size.Values[0].Num;
-                gi.BoardSizeX = sx;
-                gi.BoardSizeY = sy;
-            }
-            var handicap = root.Sequence.Nodes[0].Properties.SingleOrDefault(x => x.Name == "HA");
-            if (handicap != null)
-            {
-                gi.Handicap = handicap.Values[0].Num;
-                if (gi.Handicap > 0)
-                    gi.StartingPlayer = Content.White;
-            }
-            var komi = root.Sequence.Nodes[0].Properties.SingleOrDefault(x => x.Name == "KM");
-            if (komi != null)
-            {
-                gi.Komi = komi.Values[0].Double;
-            }
-            var startingPlayer = root.Sequence.Nodes[0].Properties.SingleOrDefault(x => x.Name == "PL");
-            if (startingPlayer != null)
-            {
-                gi.StartingPlayer = startingPlayer.Values[0].Turn;
-            }
-            return gi;
         }
         private static void CreateGameTree(SGFGameTree root, Game p)
         {
-            foreach (var m in root.Sequence.GetMoves())
+            if (p.GameInfo != null)
             {
-                if (m.IsMove)
-                    p = p.MakeMove(m.Values[0].Move);
-                else if (m.IsSetup)
+                foreach (var m in root.Sequence.GetRootProperties())
                 {
-                    Content c = Content.Empty;
-                    if (m.Name == "AB") c = Content.Black;
-                    else if (m.Name == "AW") c = Content.White;
-                    else if (m.Name == "AE") c = Content.Empty;
-                    else if (m.Name == "PL") p.Turn = m.Values[0].Turn;
-
-                    if (m.Name != "PL")
-                    {
-                        foreach (var v in m.Values)
-                        {
-                            if (v.IsComposed)
-                            {
-                                Point a = v.MoveA, b = v.MoveB;
-                                for (int i = a.x; i <= b.x; i++)
-                                {
-                                    for (int j = a.y; j <= b.y; j++)
-                                        p.Board[i, j] = c;
-                                }
-                            }
-                            else
-                                p.Board[v.Move] = c;
-                        }
-                    }
-                    p.sgfProperties.Add(m);
-                }
-                else
-                {
-                    if (!m.IsFileFormat)
+                    if (PropertyHandlers.ContainsKey(m.Name))
+                        PropertyHandlers[m.Name](p, m);
+                    else
                         p.sgfProperties.Add(m);
                 }
+                p.InitializeFromGameInfo();
+            }
+            foreach (var m in root.Sequence.GetProperties())
+            {
+                if (PropertyHandlers.ContainsKey(m.Name))
+                    p = PropertyHandlers[m.Name](p, m);
+                else
+                    p.sgfProperties.Add(m);
             }
             foreach (var r in root.GameTrees)
             {
                 CreateGameTree(r, p);
             }
+        }
+
+        Game HandleMove(SGFProperty p)
+        {
+            Content c = (p.Name == "W" ? Content.White : Content.Black);
+            Turn = c;
+            return MakeMove(p.Values[0].Move);
+        }
+        Game HandleSetup(SGFProperty p)
+        {
+            Content c;
+            if (p.Name == "AE") c = Content.Empty;
+            else if (p.Name == "AW") c = Content.White;
+            else c = Content.Black;
+            foreach (var v in p.Values)
+            {
+                if (v.IsComposed)
+                    SetupMove(v.MoveA, v.MoveB, c);
+                else
+                    SetupMove(v.Move, c);
+            }
+            return this;
+        }
+        Game HandlePlayerTurn(SGFProperty p)
+        {
+            if (GameInfo != null) GameInfo.StartingPlayer = p.Values[0].Turn;
+            Turn = p.Values[0].Turn;
+            return this;
+        }
+        Game HandleHandicap(SGFProperty p)
+        {
+            GameInfo.Handicap = p.Values[0].Num;
+            return this;
+        }
+        Game HandleBoardSize(SGFProperty p)
+        {
+            SGFPropValue v = p.Values[0];
+            if (v.IsComposed)
+            {
+                GameInfo.BoardSizeX = v.NumX;
+                GameInfo.BoardSizeY = v.NumY;
+            }
+            else
+                GameInfo.BoardSizeX = GameInfo.BoardSizeY = v.Num;
+            return this;
+        }
+        Game HandleKomi(SGFProperty p)
+        {
+            GameInfo.Komi = p.Values[0].Double;
+            return this;
         }
     }
 }

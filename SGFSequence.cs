@@ -29,15 +29,14 @@ namespace Go
             }
         }
 
-        internal IEnumerable<SGFProperty> GetMoves()
+        internal IEnumerable<SGFProperty> GetProperties()
         {
-            foreach (var n in Nodes)
-            {
-                foreach (var p in n.Properties.OrderBy(x => x.Priority))
-                {
-                    yield return p;
-                }
-            }
+            return Nodes.SelectMany(x => x.Properties.Where(y=>!y.IsRoot).OrderBy(y => y.Priority));
+        }
+
+        internal IEnumerable<SGFProperty> GetRootProperties()
+        {
+            return Nodes.SelectMany(x => x.Properties.Where(y => y.IsRoot));
         }
     }
 }

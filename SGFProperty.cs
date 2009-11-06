@@ -35,7 +35,18 @@ namespace Go
         /// <summary>
         /// Returns true if this property is a file format property.
         /// </summary>
-        public bool IsFileFormat { get { return Name == "FF"; } }
+        public bool IsRoot
+        {
+            get
+            {
+                return Name == "FF" ||
+                       Name == "SZ" ||
+                       Name == "HA" ||
+                       Name == "KM";
+            }
+        }
+
+
 
         /// <summary>
         /// Returns the property priority when writing an SGF file.
@@ -44,7 +55,7 @@ namespace Go
         {
             get
             {
-                if (IsFileFormat) return 0;
+                if (IsRoot) return 0;
                 if (IsSetup) return 1;
                 if (IsMove) return 2;
                 return 3;
