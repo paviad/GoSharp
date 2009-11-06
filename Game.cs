@@ -426,6 +426,17 @@ namespace Go
                 s.Write("(;FF[4]");
                 if (GameInfo.Handicap > 0) s.Write("HA[" + GameInfo.Handicap + "]");
                 if (GameInfo.StartingPlayer == Content.White) s.Write("PL[W]");
+                if (GameInfo.BoardSizeX != 19 && GameInfo.BoardSizeY != 19)
+                {
+                    if (GameInfo.BoardSizeX == GameInfo.BoardSizeY)
+                    {
+                        s.Write("SZ[" + GameInfo.BoardSizeX + "]");
+                    }
+                    else
+                    {
+                        s.Write("SZ[" + GameInfo.BoardSizeX + ":" + GameInfo.BoardSizeY + "]");
+                    }
+                }
             }
             SerializeSGFProperties(s);
             if (moves.Count == 1)
