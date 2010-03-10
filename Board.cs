@@ -77,9 +77,9 @@ namespace Go
                 }
                 foreach (var p in groupCache.Where(x => x.IsDead))
                 {
-                    if (p.Content == Content.Black) 
+                    if (p.Content == Content.Black)
                         w += p.Points.Count() * 2;
-                    else if (p.Content == Content.White) 
+                    else if (p.Content == Content.White)
                         b += p.Points.Count() * 2;
                 }
                 rc[Content.Black] = b;
@@ -87,7 +87,7 @@ namespace Go
                 return rc;
             }
         }
-        
+
         /// <summary>
         /// Constructs a board object of specified horizontal and vertical size.
         /// </summary>
@@ -465,6 +465,62 @@ namespace Go
                 rc += "\n";
             }
             return rc;
+        }
+
+        /// <summary>
+        /// Represents a position and a content at that position.
+        /// </summary>
+        public struct PositionContent
+        {
+            /// <summary>
+            /// The position point.
+            /// </summary>
+            public Point Position;
+
+            /// <summary>
+            /// The content at the position.
+            /// </summary>
+            public Content Content;
+        }
+
+        /// <summary>
+        /// Returns an enumerable representing all occupied board spots.
+        /// </summary>
+        public IEnumerable<PositionContent> AllStones
+        {
+            get
+            {
+                for (int i = 0; i < SizeX; i++)
+                {
+                    for (int j = 0; j < SizeY; j++)
+                    {
+                        if (content[i, j] != Content.Empty)
+                            yield return new PositionContent
+                            {
+                                Content = content[i, j],
+                                Position = new Point(i, j)
+                            };
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns an enumerable representing all empty board spots.
+        /// </summary>
+        public IEnumerable<Point> EmptySpaces
+        {
+            get
+            {
+                for (int i = 0; i < SizeX; i++)
+                {
+                    for (int j = 0; j < SizeY; j++)
+                    {
+                        if (content[i, j] == Content.Empty)
+                            yield return new Point(i, j);
+                    }
+                }
+            }
         }
     }
 }
