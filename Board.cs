@@ -467,6 +467,11 @@ namespace Go
             return rc;
         }
 
+        public override int GetHashCode()
+        {
+            return GetContentHashCode();
+        }
+
         /// <summary>
         /// Represents a position and a content at that position.
         /// </summary>
