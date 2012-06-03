@@ -426,13 +426,23 @@ namespace Go
         /// <returns>The SGF game, or null if a TextWriter is provided.</returns>
         public string SerializeToSGF(TextWriter s)
         {
-            bool top = false;
-            StringWriter sw = null;
             if (s == null)
             {
-                s = sw = new StringWriter();
-                top = true;
+                using (s = new StringWriter())
+                {
+                    SerializeToSGFInternal(s);
+                    return s.ToString();
+                }
             }
+            else
+            {
+                SerializeToSGFInternal(s);
+                return null;
+            }
+        }
+
+        private void SerializeToSGFInternal(TextWriter s)
+        {
             if (GameInfo != null)
             {
                 s.Write("(;");
@@ -473,12 +483,6 @@ namespace Go
             {
                 s.Write(")");
             }
-            if (top)
-            {
-                sw.Close();
-                return sw.ToString();
-            }
-            else return null;
         }
         private void SerializeSGFProperties(TextWriter s)
         {
@@ -507,13 +511,14 @@ namespace Go
         /// <returns>A List&lt;Game&gt; containing all game trees in the SGF file.</returns>
         public static List<Game> SerializeFromSGF(string path)
         {
-            StreamReader sr = new StreamReader(path, ASCIIEncoding.ASCII);
-            SGFCollection coll = new SGFCollection();
-            coll.Read(sr);
-            List<Game> games = new List<Game>();
-            foreach (var c in coll.GameTrees) games.Add(new Game(c));
-            sr.Close();
-            return games;
+            using (StreamReader sr = new StreamReader(path, ASCIIEncoding.ASCII))
+            {
+                SGFCollection coll = new SGFCollection();
+                coll.Read(sr);
+                List<Game> games = new List<Game>();
+                foreach (var c in coll.GameTrees) games.Add(new Game(c));
+                return games;
+            }
         }
         private static void CreateGameTree(SGFGameTree root, Game p)
         {

@@ -444,6 +444,12 @@
             </summary>
             <returns>Returns the multi-line string representation of the board.</returns>
         </member>
+        <member name="M:Go.Board.GetHashCode">
+            <summary>
+            Gets a hash code of this board. Hash code includes board content.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:Go.Board.SizeX">
             <summary>
             Gets the horizontal size of the board.

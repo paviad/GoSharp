@@ -467,6 +467,10 @@ namespace Go
             return rc;
         }
 
+        /// <summary>
+        /// Gets a hash code of this board. Hash code includes board content.
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return GetContentHashCode();
