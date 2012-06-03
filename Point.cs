@@ -68,6 +68,7 @@ namespace Go
         /// <returns>The point in SGF format.</returns>
         public static string ConvertToSGF(Point pnt)
         {
+            if (pnt.Equals(Game.PassMove)) return "";
             return ConvertToSGF(pnt.x, pnt.y);
         }
 
@@ -78,6 +79,7 @@ namespace Go
         /// <returns>The Point object representing the position.</returns>
         public static Point ConvertFromSGF(string sgf)
         {
+            if (sgf == "") return Game.PassMove;
             var bb = ASCIIEncoding.ASCII.GetBytes(sgf);
             return new Point(bb[0] - 97, bb[1] - 97);
         }

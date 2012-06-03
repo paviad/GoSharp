@@ -27,6 +27,8 @@ namespace Go
         static Dictionary<Content, string> ColorToSGFProp = new Dictionary<Content, string>();
         static Dictionary<string, Func<Game, SGFProperty, Game>> PropertyHandlers = new Dictionary<string, Func<Game, SGFProperty, Game>>();
 
+        static HashSet<string> PropertiesToExclude = new HashSet<string> { "W", "B", "AE", "AB", "AW" };
+
         static Game()
         {
             foreach (var kvp in SGFPropToColor) ColorToSGFProp[kvp.Value] = kvp.Key;
@@ -41,6 +43,8 @@ namespace Go
             PropertyHandlers["SZ"] = ((x, y) => x.HandleBoardSize(y));
             PropertyHandlers["KM"] = ((x, y) => x.HandleKomi(y));
         }
+
+        public static readonly Point PassMove = new Point(-1, -1);
 
         Dictionary<Point, Game> moves = new Dictionary<Point, Game>();
         Dictionary<Content, int> captures = new Dictionary<Content, int>()
@@ -211,46 +215,43 @@ namespace Go
 
         private void SetHandicap(int handicap)
         {
-            List<Point> parr;
+            var handiPoints = new Point[9];
+            int xLeft, yBottom, xMiddle, yMiddle, xRight, yTop;
+            if (Board.SizeX >= 13) xLeft = 3;
+            else xLeft = 2;
+            if (Board.SizeY >= 13) yBottom = 3;
+            else yBottom = 2;
+            xMiddle = (Board.SizeX + 1) / 2 - 1;
+            yMiddle = (Board.SizeY + 1) / 2 - 1;
+            xRight = (Board.SizeX - 1 - xLeft);
+            yTop = (Board.SizeY - 1 - yBottom);
+            handiPoints[0] = new Point(xLeft, yBottom);
+            handiPoints[1] = new Point(xRight, yTop);
+            handiPoints[2] = new Point(xRight, yBottom);
+            handiPoints[3] = new Point(xLeft, yTop);
+            handiPoints[4] = new Point(xLeft, yMiddle);
+            handiPoints[5] = new Point(xRight, yMiddle);
+            handiPoints[6] = new Point(xMiddle, yBottom);
+            handiPoints[7] = new Point(xMiddle, yTop);
+            handiPoints[8] = new Point(xMiddle, yMiddle);
+
+            List<int> parr;
+
             if (handicap <= 5)
             {
-                parr = new List<Point> {
-                    new Point(3,3),
-                    new Point(15,15),
-                    new Point(15,3),
-                    new Point(3,15),
-                    new Point(9,9)
-                };
+                parr = new List<int> { 0, 1, 2, 3, 8 };
             }
             else if (handicap <= 7)
             {
-                parr = new List<Point> {
-                    new Point(3,3),
-                    new Point(15,15),
-                    new Point(15,3),
-                    new Point(3,15),
-                    new Point(3,9),
-                    new Point(15,9),
-                    new Point(9,9)
-                };
+                parr = new List<int> { 0, 1, 2, 3, 4, 5, 8 };
             }
             else if (handicap <= 9)
             {
-                parr = new List<Point> {
-                    new Point(3,3),
-                    new Point(15,15),
-                    new Point(15,3),
-                    new Point(3,15),
-                    new Point(3,9),
-                    new Point(15,9),
-                    new Point(9,3),
-                    new Point(9,15),
-                    new Point(9,9)
-                };
+                parr = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
             }
             else throw new InvalidCastException("Maximum handicap is 9.");
             for (int i = 0; i < handicap; i++)
-                SetupMove(parr[i], Content.Black);
+                SetupMove(handiPoints[parr[i]], Content.Black);
         }
 
         /// <summary>
@@ -314,6 +315,13 @@ namespace Go
             var g = new Game(this);
             legal = g.InternalMakeMove(x, y);
             moves.Add(new Point(x, y), g);
+            return g;
+        }
+
+        public Game Pass()
+        {
+            var g = new Game(this);
+            moves.Add(Game.PassMove, g);
             return g;
         }
 
@@ -446,21 +454,21 @@ namespace Go
             if (GameInfo != null)
             {
                 s.Write("(;");
-                SerializeSGFProperties(s);
-                if (GameInfo.Handicap > 0) s.Write("HA[" + GameInfo.Handicap + "]");
-                if (GameInfo.StartingPlayer == Content.White) s.Write("PL[W]");
-                if (GameInfo.Komi != 5.5) s.Write("KM[" + GameInfo.Komi + "]");
-                if (GameInfo.BoardSizeX != 19 && GameInfo.BoardSizeY != 19)
+                if (GameInfo.Handicap > 0) SetProperty("HA", GameInfo.Handicap.ToString(), true);
+                else RemoveProperty("HA");
+                if (GameInfo.StartingPlayer == Content.White) SetProperty("PL", "W", true);
+                else RemoveProperty("PL");
+                if (GameInfo.Komi != 5.5) SetProperty("KM", GameInfo.Komi.ToString("N2"), true);
+                else RemoveProperty("KM");
+                if (GameInfo.BoardSizeX == GameInfo.BoardSizeY)
                 {
-                    if (GameInfo.BoardSizeX == GameInfo.BoardSizeY)
-                    {
-                        s.Write("SZ[" + GameInfo.BoardSizeX + "]");
-                    }
-                    else
-                    {
-                        s.Write("SZ[" + GameInfo.BoardSizeX + ":" + GameInfo.BoardSizeY + "]");
-                    }
+                    SetProperty("SZ", GameInfo.BoardSizeX.ToString(), true);
                 }
+                else
+                {
+                    SetProperty("SZ", GameInfo.BoardSizeX + ":" + GameInfo.BoardSizeY, true);
+                }
+                SerializeSGFProperties(s);
             }
             else SerializeSGFProperties(s);
             if (moves.Count == 1)
@@ -484,6 +492,29 @@ namespace Go
                 s.Write(")");
             }
         }
+
+        private void RemoveProperty(string name)
+        {
+            SGFProperty prop = sgfProperties.SingleOrDefault(x => x.Name == name);
+            if (prop != null) sgfProperties.Remove(prop);
+        }
+
+        private void SetProperty(string name, string value, bool create)
+        {
+            SGFProperty prop = sgfProperties.SingleOrDefault(x => x.Name == name);
+            if (prop == null && !create) return;
+            if (prop == null)
+            {
+                sgfProperties.Add(new SGFProperty
+                    {
+                        Name = name,
+                        Values = new List<SGFPropValue> { new SGFPropValue(value) }
+                    });
+            }
+            else
+                prop.Values[0].Value = value;
+        }
+
         private void SerializeSGFProperties(TextWriter s)
         {
             foreach (var p in sgfProperties)
@@ -528,7 +559,7 @@ namespace Go
                 {
                     if (PropertyHandlers.ContainsKey(m.Name))
                         PropertyHandlers[m.Name](p, m);
-                    else
+                    if (!PropertiesToExclude.Contains(m.Name))
                         p.sgfProperties.Add(m);
                 }
                 p.InitializeFromGameInfo();
@@ -537,7 +568,7 @@ namespace Go
             {
                 if (PropertyHandlers.ContainsKey(m.Name))
                     p = PropertyHandlers[m.Name](p, m);
-                else
+                if (!PropertiesToExclude.Contains(m.Name))
                     p.sgfProperties.Add(m);
             }
             foreach (var r in root.GameTrees)
@@ -550,6 +581,7 @@ namespace Go
         {
             Content c = (p.Name == "W" ? Content.White : Content.Black);
             Turn = c;
+            if (p.Values[0].Value == "") return Pass();
             return MakeMove(p.Values[0].Move);
         }
         Game HandleSetup(SGFProperty p)

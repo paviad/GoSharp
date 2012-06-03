@@ -32,6 +32,11 @@ namespace Go
         /// </summary>
         public bool IsSetup { get { return Name == "AE" || Name == "AB" || Name == "AW" || Name == "PL"; } }
 
+
+        private HashSet<string> moveProperties = new HashSet<string>
+        {
+            "W","B","AB","AW","AE"
+        };
         /// <summary>
         /// Returns true if this property is a file format property.
         /// </summary>
@@ -39,10 +44,7 @@ namespace Go
         {
             get
             {
-                return Name == "FF" ||
-                       Name == "SZ" ||
-                       Name == "HA" ||
-                       Name == "KM";
+                return !moveProperties.Contains(Name);
             }
         }
 

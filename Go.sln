@@ -3,7 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Go", "Go.csproj", "{122984F9-6F07-40F0-A76F-2D9DB818EBB4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoTestProject", "GoTestProject\GoTestProject.csproj", "{30A76EA1-4F41-4709-92CF-053050B092DA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0125E950-A2EE-4CD7-87E8-42CF7E1CD0CB}"
+	ProjectSection(SolutionItems) = preProject
+		Go.vsmdi = Go.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = Go.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -13,6 +25,10 @@ Global
 		{122984F9-6F07-40F0-A76F-2D9DB818EBB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{122984F9-6F07-40F0-A76F-2D9DB818EBB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{122984F9-6F07-40F0-A76F-2D9DB818EBB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30A76EA1-4F41-4709-92CF-053050B092DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30A76EA1-4F41-4709-92CF-053050B092DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30A76EA1-4F41-4709-92CF-053050B092DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30A76EA1-4F41-4709-92CF-053050B092DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

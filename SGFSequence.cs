@@ -29,9 +29,14 @@ namespace Go
             }
         }
 
+        internal IEnumerable<SGFProperty> GetAllProperties()
+        {
+            return Nodes.SelectMany(x => x.Properties);
+        }
+
         internal IEnumerable<SGFProperty> GetProperties()
         {
-            return Nodes.SelectMany(x => x.Properties.Where(y=>!y.IsRoot).OrderBy(y => y.Priority));
+            return Nodes.SelectMany(x => x.Properties.Where(y => !y.IsRoot).OrderBy(y => y.Priority));
         }
 
         internal IEnumerable<SGFProperty> GetRootProperties()
