@@ -32,7 +32,6 @@ namespace Go
         /// </summary>
         public bool IsSetup { get { return Name == "AE" || Name == "AB" || Name == "AW" || Name == "PL"; } }
 
-
         private HashSet<string> moveProperties = new HashSet<string>
         {
             "W","B","AB","AW","AE"
@@ -47,8 +46,6 @@ namespace Go
                 return !moveProperties.Contains(Name);
             }
         }
-
-
 
         /// <summary>
         /// Returns the property priority when writing an SGF file.

@@ -44,6 +44,9 @@ namespace Go
             PropertyHandlers["KM"] = ((x, y) => x.HandleKomi(y));
         }
 
+        /// <summary>
+        /// Represents a 'pass' move.
+        /// </summary>
         public static readonly Point PassMove = new Point(-1, -1);
 
         Dictionary<Point, Game> moves = new Dictionary<Point, Game>();
@@ -318,6 +321,11 @@ namespace Go
             return g;
         }
 
+        /// <summary>
+        /// Makes a 'pass' move and returns a new Game object representing the state after 
+        /// the move. The color of the move is determined by the Turn property.
+        /// </summary>
+        /// <returns>A game object representing the state of the game after the move.</returns>
         public Game Pass()
         {
             var g = new Game(this);
