@@ -103,5 +103,10 @@ namespace Go
         {
             Value = v;
         }
+
+        public override string ToString ()
+        {
+            return Value;
+        }
     }
 }

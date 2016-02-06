@@ -91,5 +91,11 @@ namespace Go
             }
             Values.Add(new SGFPropValue(val.Trim()));
         }
+
+        public override string ToString ()
+        {
+            var vs = Values.Select (v => v.ToString ()).ToArray ();
+            return Name + ":" + string.Join (", ", vs);
+        }
     }
 }
