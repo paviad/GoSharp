@@ -423,7 +423,7 @@ namespace Go
                 captures[Turn] += Board.Capture(Board.GetGroupAt(x, y));
                 legal = false;
             }
-            else captures[oturn] += Board.Capture(capturedGroups);
+            else captures[oturn] += Board.Capture(capturedGroups.Where(p => p.Content == oturn.Opposite()));
             if (superKoSet != null)
             {
                 if (superKoSet.Contains(Board, SuperKoComparer)) // Violates super-ko

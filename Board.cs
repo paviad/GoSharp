@@ -401,7 +401,7 @@ namespace Go
             return rc;
         }
 
-        internal int Capture(List<Group> captures)
+        internal int Capture(IEnumerable<Group> captures)
         {
             int rc = 0;
             foreach (var g in captures)
