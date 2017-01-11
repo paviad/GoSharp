@@ -42,6 +42,11 @@ namespace Go
             PropertyHandlers["HA"] = ((x, y) => x.HandleHandicap(y));
             PropertyHandlers["SZ"] = ((x, y) => x.HandleBoardSize(y));
             PropertyHandlers["KM"] = ((x, y) => x.HandleKomi(y));
+            PropertyHandlers["WP"] = ((x, y) => x.HandleWP (y));
+            PropertyHandlers["BP"] = ((x, y) => x.HandleBP (y));
+            PropertyHandlers["WR"] = ((x, y) => x.HandleWR (y));
+            PropertyHandlers["BR"] = ((x, y) => x.HandleBR (y));
+            PropertyHandlers["TM"] = ((x, y) => x.HandleTM (y));
         }
 
         /// <summary>
@@ -633,6 +638,39 @@ namespace Go
         Game HandleKomi(SGFProperty p)
         {
             GameInfo.Komi = p.Values[0].Double;
+            return this;
+        }
+
+        Game HandleWP (SGFProperty p)
+        {
+            GameInfo.WhitePlayer = p.Values[0].Value;
+            return this;
+        }
+
+        Game HandleBP (SGFProperty p)
+        {
+            GameInfo.BlackPlayer = p.Values[0].Value;
+            return this;
+        }
+
+        Game HandleWR (SGFProperty p)
+        {
+            GameInfo.WhiteRank = p.Values[0].Value;
+            return this;
+        }
+
+        Game HandleBR (SGFProperty p)
+        {
+            GameInfo.BlackRank = p.Values[0].Value;
+            return this;
+        }
+
+        Game HandleTM (SGFProperty p)
+        {
+            if (string.IsNullOrEmpty(p.Values[0].Value)) {
+                throw new Exception ("Invalid game.");
+            }
+            GameInfo.MainTime = TimeSpan.FromSeconds (p.Values[0].Num);
             return this;
         }
     }

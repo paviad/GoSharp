@@ -42,6 +42,13 @@ namespace Go
         /// </summary>
         public Content StartingPlayer { get; set; }
 
+
+        public string WhitePlayer { get; set; }
+        public string BlackPlayer { get; set; }
+        public string WhiteRank { get; set; }
+        public string BlackRank { get; set; }
+        public TimeSpan? MainTime { get; set; }
+
         /// <summary>
         /// Constructs a default GameInfo object, with 0 handicap, 5.5 komi 19x19 board and
         /// black as the starting player.
