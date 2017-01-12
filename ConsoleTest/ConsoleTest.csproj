@@ -49,7 +49,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Go.csproj">
+    <ProjectReference Include="..\GoSharp.csproj">
       <Project>{122984f9-6f07-40f0-a76f-2d9db818ebb4}</Project>
       <Name>Go</Name>
     </ProjectReference>

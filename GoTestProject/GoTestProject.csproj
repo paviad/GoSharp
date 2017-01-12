@@ -54,7 +54,7 @@
     <Compile Include="TestConsole.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Go.csproj">
+    <ProjectReference Include="..\GoSharp.csproj">
       <Project>{122984F9-6F07-40F0-A76F-2D9DB818EBB4}</Project>
       <Name>Go</Name>
     </ProjectReference>

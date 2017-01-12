@@ -56,6 +56,62 @@
             Represents a 'pass' move.
             </summary>
         </member>
+        <member name="P:Go.Game.Board">
+            <summary>
+            Gets the board object of the current game position.
+            </summary>
+        </member>
+        <member name="P:Go.Game.Turn">
+            <summary>
+            Gets the color of the player whose turn it is to play.
+            </summary>
+        </member>
+        <member name="P:Go.Game.GameInfo">
+            <summary>
+            Gets the GameInfo object of this game. This is null except for root
+            Game objects.
+            </summary>
+        </member>
+        <member name="P:Go.Game.Move">
+            <summary>
+            Gets the coordinates of the move taken to reach this position. May be null
+            for setup positions.
+            </summary>
+        </member>
+        <member name="P:Go.Game.SetupMoves">
+            <summary>
+            Returns a Dictionary&lt;Content, Group&gt; with the setup moves
+            of the current node.
+            </summary>
+        </member>
+        <member name="P:Go.Game.IsLegal">
+            <summary>
+            Gets a flag indicating whether the move used to reach this board was legal.
+            This property may be null if this board position is the result of only setup moves.
+            </summary>
+        </member>
+        <member name="P:Go.Game.Root">
+            <summary>
+            Gets the root Game object of the current game.
+            </summary>
+        </member>
+        <member name="P:Go.Game.Moves">
+            <summary>
+            Gets an enumerator of the move variations in this game position.
+            </summary>
+        </member>
+        <member name="P:Go.Game.WhiteCaptures">
+            <summary>
+            Gets the number of stones white has captured
+            (the number of black stones captured).
+            </summary>
+        </member>
+        <member name="P:Go.Game.BlackCaptures">
+            <summary>
+            Gets the number of stones black has captured
+            (the number of white stones captured).
+            </summary>
+        </member>
         <member name="M:Go.Game.#ctor(Go.GameInfo)">
             <summary>
             Constructs a root game object based on a GameInfo object.
@@ -195,66 +251,36 @@
             <param name="path">The path to the SGF file.</param>
             <returns>A List&lt;Game&gt; containing all game trees in the SGF file.</returns>
         </member>
-        <member name="P:Go.Game.Board">
-            <summary>
-            Gets the board object of the current game position.
-            </summary>
-        </member>
-        <member name="P:Go.Game.Turn">
-            <summary>
-            Gets the color of the player whose turn it is to play.
-            </summary>
-        </member>
-        <member name="P:Go.Game.GameInfo">
-            <summary>
-            Gets the GameInfo object of this game. This is null except for root
-            Game objects.
-            </summary>
-        </member>
-        <member name="P:Go.Game.Move">
-            <summary>
-            Gets the coordinates of the move taken to reach this position. May be null
-            for setup positions.
-            </summary>
-        </member>
-        <member name="P:Go.Game.SetupMoves">
-            <summary>
-            Returns a Dictionary&lt;Content, Group&gt; with the setup moves
-            of the current node.
-            </summary>
-        </member>
-        <member name="P:Go.Game.IsLegal">
-            <summary>
-            Gets a flag indicating whether the move used to reach this board was legal.
-            This property may be null if this board position is the result of only setup moves.
-            </summary>
-        </member>
-        <member name="P:Go.Game.Root">
-            <summary>
-            Gets the root Game object of the current game.
-            </summary>
-        </member>
-        <member name="P:Go.Game.Moves">
-            <summary>
-            Gets an enumerator of the move variations in this game position.
-            </summary>
-        </member>
-        <member name="P:Go.Game.WhiteCaptures">
-            <summary>
-            Gets the number of stones white has captured
-            (the number of black stones captured).
-            </summary>
-        </member>
-        <member name="P:Go.Game.BlackCaptures">
-            <summary>
-            Gets the number of stones black has captured
-            (the number of white stones captured).
-            </summary>
-        </member>
         <member name="T:Go.Board">
             <summary>
             Encapsulates a board position, without any game context. This object also
             supports scoring mode by setting the IsScoring property to true.
+            </summary>
+        </member>
+        <member name="P:Go.Board.SizeX">
+            <summary>
+            Gets the horizontal size of the board.
+            </summary>
+        </member>
+        <member name="P:Go.Board.SizeY">
+            <summary>
+            Gets the vertical size of the board.
+            </summary>
+        </member>
+        <member name="P:Go.Board.IsScoring">
+            <summary>
+            Gets or sets a flag indicating whether this board is in scoring mode.
+            If this property is changed from false to true, the scoring cache is cleared,
+            and all dead groups are reinstated. To reset the scoring process, set this
+            property to false and then to true again, or alternatively call ResetScoring.
+            </summary>
+        </member>
+        <member name="P:Go.Board.Territory">
+            <summary>
+            Gets a Dictionary&lt;Content,int&gt; containing the score for each side. The score
+            includes dead groups but does not include captured stones (no game context).
+            If SetDeadGroup is called, this property must be retrieved again to get
+            the updated score.
             </summary>
         </member>
         <member name="M:Go.Board.#ctor(System.Int32,System.Int32)">
@@ -278,6 +304,25 @@
             length is the square root of the number of parameters.
             </summary>
             <param name="c">The board content (0-empty, 1-black, 2-white).</param>
+        </member>
+        <member name="P:Go.Board.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets or sets the board content at the specified point. Changing the board
+            content using this property is not considered a game move, but rather a
+            setup move.
+            </summary>
+            <param name="x">The X coordinate of the position.</param>
+            <param name="y">The Y coordinate of the position.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Go.Board.Item(Go.Point)">
+            <summary>
+            Gets or sets the board content at the specified point. Changing the board
+            content using this property is not considered a game move, but rather a
+            setup move.
+            </summary>
+            <param name="n">The coordinates of the position.</param>
+            <returns></returns>
         </member>
         <member name="M:Go.Board.GetContentAt(Go.Point)">
             <summary>
@@ -386,61 +431,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="P:Go.Board.SizeX">
-            <summary>
-            Gets the horizontal size of the board.
-            </summary>
-        </member>
-        <member name="P:Go.Board.SizeY">
-            <summary>
-            Gets the vertical size of the board.
-            </summary>
-        </member>
-        <member name="P:Go.Board.IsScoring">
-            <summary>
-            Gets or sets a flag indicating whether this board is in scoring mode.
-            If this property is changed from false to true, the scoring cache is cleared,
-            and all dead groups are reinstated. To reset the scoring process, set this
-            property to false and then to true again, or alternatively call ResetScoring.
-            </summary>
-        </member>
-        <member name="P:Go.Board.Territory">
-            <summary>
-            Gets a Dictionary&lt;Content,int&gt; containing the score for each side. The score
-            includes dead groups but does not include captured stones (no game context).
-            If SetDeadGroup is called, this property must be retrieved again to get
-            the updated score.
-            </summary>
-        </member>
-        <member name="P:Go.Board.Item(System.Int32,System.Int32)">
-            <summary>
-            Gets or sets the board content at the specified point. Changing the board
-            content using this property is not considered a game move, but rather a
-            setup move.
-            </summary>
-            <param name="x">The X coordinate of the position.</param>
-            <param name="y">The Y coordinate of the position.</param>
-            <returns></returns>
-        </member>
-        <member name="P:Go.Board.Item(Go.Point)">
-            <summary>
-            Gets or sets the board content at the specified point. Changing the board
-            content using this property is not considered a game move, but rather a
-            setup move.
-            </summary>
-            <param name="n">The coordinates of the position.</param>
-            <returns></returns>
-        </member>
-        <member name="P:Go.Board.AllStones">
-            <summary>
-            Returns an enumerable representing all occupied board spots.
-            </summary>
-        </member>
-        <member name="P:Go.Board.EmptySpaces">
-            <summary>
-            Returns an enumerable representing all empty board spots.
-            </summary>
-        </member>
         <member name="T:Go.Board.PositionContent">
             <summary>
             Represents a position and a content at that position.
@@ -454,6 +444,16 @@
         <member name="F:Go.Board.PositionContent.Content">
             <summary>
             The content at the position.
+            </summary>
+        </member>
+        <member name="P:Go.Board.AllStones">
+            <summary>
+            Returns an enumerable representing all occupied board spots.
+            </summary>
+        </member>
+        <member name="P:Go.Board.EmptySpaces">
+            <summary>
+            Returns an enumerable representing all empty board spots.
             </summary>
         </member>
         <member name="T:Go.Content">
@@ -479,12 +479,6 @@
         <member name="T:Go.GameInfo">
             <summary>
             Provides information used to create the root node of a game tree.
-            </summary>
-        </member>
-        <member name="M:Go.GameInfo.#ctor">
-            <summary>
-            Constructs a default GameInfo object, with 0 handicap, 5.5 komi 19x19 board and
-            black as the starting player.
             </summary>
         </member>
         <member name="P:Go.GameInfo.Handicap">
@@ -519,6 +513,12 @@
             Gets or sets the color of the starting player.
             </summary>
         </member>
+        <member name="M:Go.GameInfo.#ctor">
+            <summary>
+            Constructs a default GameInfo object, with 0 handicap, 5.5 komi 19x19 board and
+            black as the starting player.
+            </summary>
+        </member>
         <member name="T:Go.Group">
             <summary>
             Represents a group of stones (or empty spaces) on a board object. This
@@ -526,6 +526,31 @@
             In essence it is simply a set of board coordinates, with an associated
             content (black, white or empty), and state (dead or alive for scoring
             purposes).
+            </summary>
+        </member>
+        <member name="P:Go.Group.Content">
+            <summary>
+            Gets the content of the group.
+            </summary>
+        </member>
+        <member name="P:Go.Group.Neighbours">
+            <summary>
+            Gets an enumerator for the neighboring coordinates of the group.
+            </summary>
+        </member>
+        <member name="P:Go.Group.Points">
+            <summary>
+            Gets an enumerator for the coordinates contained in this group.
+            </summary>
+        </member>
+        <member name="P:Go.Group.IsDead">
+            <summary>
+            Gets or sets whether this group is dead for the purposes of scoring.
+            </summary>
+        </member>
+        <member name="P:Go.Group.Territory">
+            <summary>
+            Gets the territory ownership color of this group of empty spaces.
             </summary>
         </member>
         <member name="M:Go.Group.#ctor(Go.Content)">
@@ -561,31 +586,6 @@
             Returns a string representation of the group as a list of points.
             </summary>
             <returns>Returns a string representation of the group as a list of points.</returns>
-        </member>
-        <member name="P:Go.Group.Content">
-            <summary>
-            Gets the content of the group.
-            </summary>
-        </member>
-        <member name="P:Go.Group.Neighbours">
-            <summary>
-            Gets an enumerator for the neighboring coordinates of the group.
-            </summary>
-        </member>
-        <member name="P:Go.Group.Points">
-            <summary>
-            Gets an enumerator for the coordinates contained in this group.
-            </summary>
-        </member>
-        <member name="P:Go.Group.IsDead">
-            <summary>
-            Gets or sets whether this group is dead for the purposes of scoring.
-            </summary>
-        </member>
-        <member name="P:Go.Group.Territory">
-            <summary>
-            Gets the territory ownership color of this group of empty spaces.
-            </summary>
         </member>
         <member name="T:Go.Point">
             <summary>
@@ -659,6 +659,12 @@
             Parse an SGFCollection object from a TextReader.
             </summary>
             <param name="sr">The source TextReader.</param>
+        </member>
+        <member name="M:Go.SGFCollection.Create(System.Byte[])">
+            <summary>
+            Create an SGFCollection object from a byte array.
+            </summary>
+            <param name="bytes">The source byte array.</param>
         </member>
         <member name="T:Go.SGFGameTree">
             <summary>
@@ -734,12 +740,6 @@
             Contains the property value.
             </summary>
         </member>
-        <member name="M:Go.SGFPropValue.#ctor(System.String)">
-            <summary>
-            Construct an SGFPropValue object using the specified value.
-            </summary>
-            <param name="v">The value of the SGFPropValue.</param>
-        </member>
         <member name="P:Go.SGFPropValue.IsComposed">
             <summary>
             Returns true if the property value is a composed value (value ':' value).
@@ -794,6 +794,12 @@
             <summary>
             Gets the property value as a color object (Content enum).
             </summary>
+        </member>
+        <member name="M:Go.SGFPropValue.#ctor(System.String)">
+            <summary>
+            Construct an SGFPropValue object using the specified value.
+            </summary>
+            <param name="v">The value of the SGFPropValue.</param>
         </member>
         <member name="T:Go.SGFSequence">
             <summary>
