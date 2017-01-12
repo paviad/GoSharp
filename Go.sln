@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Go", "Go.csproj", "{122984F9-6F07-40F0-A76F-2D9DB818EBB4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoSharp", "GoSharp.csproj", "{122984F9-6F07-40F0-A76F-2D9DB818EBB4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoTestProject", "GoTestProject\GoTestProject.csproj", "{30A76EA1-4F41-4709-92CF-053050B092DA}"
 EndProject
