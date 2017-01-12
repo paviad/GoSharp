@@ -230,6 +230,12 @@ namespace Go
         /// <param name="c">The new content at the position.</param>
         public void SetContentAt(int x, int y, Content c)
         {
+            if (x < 0) {
+                throw new ArgumentOutOfRangeException ("x", "Invalid x coordinate.");
+            }
+            if (y < 0) {
+                throw new ArgumentOutOfRangeException ("y", "Invalid y coordinate.");
+            }
             content[x, y] = c;
             ClearGroupCache();
         }
