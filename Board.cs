@@ -391,6 +391,7 @@ namespace Go
                 if (GetContentAt(n) != Content.Empty)
                 {
                     Group ngroup = GetGroupAt(n);
+                    if (ngroup.ContainsPoint(x, y)) continue; // Don't consider self group
                     if (GetLiberties(ngroup) == 0) captures.Add(ngroup);
                 }
             }
