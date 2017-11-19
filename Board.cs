@@ -230,11 +230,13 @@ namespace Go
         /// <param name="c">The new content at the position.</param>
         public void SetContentAt(int x, int y, Content c)
         {
-            if (x < 0) {
-                throw new ArgumentOutOfRangeException ("x", "Invalid x coordinate.");
+            if (x < 0)
+            {
+                throw new ArgumentOutOfRangeException("x", "Invalid x coordinate.");
             }
-            if (y < 0) {
-                throw new ArgumentOutOfRangeException ("y", "Invalid y coordinate.");
+            if (y < 0)
+            {
+                throw new ArgumentOutOfRangeException("y", "Invalid y coordinate.");
             }
             content[x, y] = c;
             ClearGroupCache();
@@ -392,7 +394,11 @@ namespace Go
                 {
                     Group ngroup = GetGroupAt(n);
                     if (ngroup.ContainsPoint(x, y)) continue; // Don't consider self group
-                    if (GetLiberties(ngroup) == 0) captures.Add(ngroup);
+                    if (GetLiberties(ngroup) == 0)
+                    {
+                        if (!captures.Any(g => g.Points.Intersect(ngroup.Points).Any()))
+                            captures.Add(ngroup);
+                    }
                 }
             }
             return captures;

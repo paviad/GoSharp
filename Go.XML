@@ -660,12 +660,6 @@
             </summary>
             <param name="sr">The source TextReader.</param>
         </member>
-        <member name="M:Go.SGFCollection.Create(System.Byte[])">
-            <summary>
-            Create an SGFCollection object from a byte array.
-            </summary>
-            <param name="bytes">The source byte array.</param>
-        </member>
         <member name="T:Go.SGFGameTree">
             <summary>
             Represents an SGF game-tree, see the SGF specification at
