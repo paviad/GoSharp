@@ -79,18 +79,6 @@ namespace Go
             }
         }
 
-        private void ReadValue(TextReader sr)
-        {
-            char c = (char)sr.Read();
-            if (c != '[')
-                throw new InvalidDataException("Property value doesn't begin with a '['.");
-            string val = "";
-            while ((c = (char)sr.Read()) != ']')
-            {
-                val += c;
-            }
-            Values.Add(new SGFPropValue(val.Trim()));
-        }
 
         public override string ToString ()
         {
@@ -99,3 +87,55 @@ namespace Go
         }
     }
 }
+        private void ReadValue (TextReader sr)
+        {
+            char c = (char) sr.Read ();
+            if (c != '[')
+                throw new InvalidDataException ("Property value doesn't begin with a '['.");
+
+            bool verbatim = false;
+            var sb = new StringBuilder ();
+
+            for (; ; ) {
+                c = (char) sr.Read ();
+
+                /* Spec 3.2. Text/Formatting
+                 * Formatting:
+                 * Soft line break: linebreaks preceded by a "\" (soft linebreaks are converted to "", i.e. they are removed)
+                 * Hard line breaks: any other linebreaks encountered
+                 *
+                 * Attention: a single linebreak is represented differently on different systems, e.g. "LFCR" for DOS, "LF" on Unix. An application should be able to deal with following linebreaks: LF, CR, LFCR, CRLF.
+                 * [...]
+                 * Escaping: "\" is the escape character. Any char following "\" is inserted verbatim (exception: whitespaces still have to be converted to space!). Following chars have to be escaped, when used in Text: "]", "\" and ":" (only if used in compose data type).
+                 */
+                if (verbatim) {
+                    if (c == '\r' || c == '\n') {
+                        var next = sr.Peek ();
+                        if (next != c && (next == '\r' || next == '\n')) {
+                            sr.Read ();
+                        }
+                    }
+                    else {
+                        if (char.IsWhiteSpace (c)) {
+                            c = ' ';
+                        }
+                        sb.Append (c);
+                    }
+                    verbatim = false;
+                    continue;
+                }
+
+                if (c == '\\') {
+                    verbatim = true;
+                    continue;
+                }
+
+                if (c == ']') {
+                    break;
+                }
+
+                sb.Append (c);
+            }
+
+            Values.Add (new SGFPropValue (sb.ToString ()));
+        }
