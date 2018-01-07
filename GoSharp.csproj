@@ -61,6 +61,7 @@
     <Compile Include="SGFPropValue.cs" />
     <Compile Include="SGFSequence.cs" />
     <Compile Include="TextReaderExtensions.cs" />
+    <Compile Include="Variation.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ChangeLog.txt" />

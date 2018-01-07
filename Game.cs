@@ -54,7 +54,7 @@ namespace Go
         /// </summary>
         public static readonly Point PassMove = new Point(-1, -1);
 
-        Dictionary<Point, Game> moves = new Dictionary<Point, Game>();
+        private List<Variation> moves = new List<Variation>();
         Dictionary<Content, int> captures = new Dictionary<Content, int>()
         {
             { Content.Black, 0 },
@@ -147,7 +147,7 @@ namespace Go
         {
             get
             {
-                return moves.Values;
+                return moves.Select(x=>x.Game);
             }
         }
 
@@ -322,7 +322,7 @@ namespace Go
         {
             var g = new Game(this);
             legal = g.InternalMakeMove(x, y);
-            moves.Add(new Point(x, y), g);
+            moves.Add(new Variation(new Point(x, y), g));
             return g;
         }
 
@@ -334,7 +334,7 @@ namespace Go
         public Game Pass()
         {
             var g = new Game(this);
-            moves.Add(Game.PassMove, g);
+            moves.Add(new Variation(Game.PassMove, g));
             return g;
         }
 
@@ -486,17 +486,17 @@ namespace Go
             else SerializeSGFProperties(s);
             if (moves.Count == 1)
             {
-                Point pnt = moves.First().Key;
+                Point pnt = moves.First().Move;
                 SerializeMove(s, pnt);
-                moves.First().Value.SerializeToSGF(s);
+                moves.First().Game.SerializeToSGF(s);
             }
             else if (moves.Count > 1)
             {
                 foreach (var m in moves)
                 {
                     s.Write("(");
-                    SerializeMove(s, m.Key);
-                    m.Value.SerializeToSGF(s);
+                    SerializeMove(s, m.Move);
+                    m.Game.SerializeToSGF(s);
                     s.Write(")");
                 }
             }
