@@ -18,16 +18,18 @@ namespace Go
         /// one instance of this.
         /// </summary>
         public static readonly SuperKoComparer SuperKoComparer = new SuperKoComparer();
-        static Dictionary<string, Content> SGFPropToColor = new Dictionary<string, Content>()
+
+        private static Dictionary<string, Content> SGFPropToColor = new Dictionary<string, Content>()
         {
             { "AE", Content.Empty },
             { "AB", Content.Black },
             { "AW", Content.White }
         };
-        static Dictionary<Content, string> ColorToSGFProp = new Dictionary<Content, string>();
-        static Dictionary<string, Func<Game, SGFProperty, Game>> PropertyHandlers = new Dictionary<string, Func<Game, SGFProperty, Game>>();
 
-        static HashSet<string> PropertiesToExclude = new HashSet<string> { "W", "B", "AE", "AB", "AW" };
+        private static Dictionary<Content, string> ColorToSGFProp = new Dictionary<Content, string>();
+        private static Dictionary<string, Func<Game, SGFProperty, Game>> PropertyHandlers = new Dictionary<string, Func<Game, SGFProperty, Game>>();
+
+        private static HashSet<string> PropertiesToExclude = new HashSet<string> { "W", "B", "AE", "AB", "AW" };
 
         static Game()
         {
@@ -55,14 +57,16 @@ namespace Go
         public static readonly Point PassMove = new Point(-1, -1);
 
         private List<Variation> moves = new List<Variation>();
-        Dictionary<Content, int> captures = new Dictionary<Content, int>()
+
+        private Dictionary<Content, int> captures = new Dictionary<Content, int>()
         {
             { Content.Black, 0 },
             { Content.White, 0 }
         };
-        HashSet<Board> superKoSet = new HashSet<Board>(SuperKoComparer);
-        List<SGFProperty> sgfProperties = new List<SGFProperty>();
-        Dictionary<Content, Group> setupMoves = null;
+
+        private HashSet<Board> superKoSet = new HashSet<Board>(SuperKoComparer);
+        private List<SGFProperty> sgfProperties = new List<SGFProperty>();
+        private Dictionary<Content, Group> setupMoves = null;
 
         /// <summary>
         /// Gets the board object of the current game position.
@@ -590,14 +594,15 @@ namespace Go
             }
         }
 
-        Game HandleMove(SGFProperty p)
+        private Game HandleMove(SGFProperty p)
         {
             Content c = (p.Name == "W" ? Content.White : Content.Black);
             Turn = c;
             if (p.Values[0].Value == "") return Pass();
             return MakeMove(p.Values[0].Move);
         }
-        Game HandleSetup(SGFProperty p)
+
+        private Game HandleSetup(SGFProperty p)
         {
             Content c;
             if (p.Name == "AE") c = Content.Empty;
@@ -612,18 +617,21 @@ namespace Go
             }
             return this;
         }
-        Game HandlePlayerTurn(SGFProperty p)
+
+        private Game HandlePlayerTurn(SGFProperty p)
         {
             if (GameInfo != null) GameInfo.StartingPlayer = p.Values[0].Turn;
             Turn = p.Values[0].Turn;
             return this;
         }
-        Game HandleHandicap(SGFProperty p)
+
+        private Game HandleHandicap(SGFProperty p)
         {
             GameInfo.Handicap = p.Values[0].Num;
             return this;
         }
-        Game HandleBoardSize(SGFProperty p)
+
+        private Game HandleBoardSize(SGFProperty p)
         {
             SGFPropValue v = p.Values[0];
             if (v.IsComposed)
@@ -635,37 +643,38 @@ namespace Go
                 GameInfo.BoardSizeX = GameInfo.BoardSizeY = v.Num;
             return this;
         }
-        Game HandleKomi(SGFProperty p)
+
+        private Game HandleKomi(SGFProperty p)
         {
             GameInfo.Komi = p.Values[0].Double;
             return this;
         }
 
-        Game HandleWP (SGFProperty p)
+        private Game HandleWP(SGFProperty p)
         {
             GameInfo.WhitePlayer = p.Values[0].Value;
             return this;
         }
 
-        Game HandleBP (SGFProperty p)
+        private Game HandleBP(SGFProperty p)
         {
             GameInfo.BlackPlayer = p.Values[0].Value;
             return this;
         }
 
-        Game HandleWR (SGFProperty p)
+        private Game HandleWR(SGFProperty p)
         {
             GameInfo.WhiteRank = p.Values[0].Value;
             return this;
         }
 
-        Game HandleBR (SGFProperty p)
+        private Game HandleBR(SGFProperty p)
         {
             GameInfo.BlackRank = p.Values[0].Value;
             return this;
         }
 
-        Game HandleTM (SGFProperty p)
+        private Game HandleTM(SGFProperty p)
         {
             if (string.IsNullOrEmpty(p.Values[0].Value)) {
                 throw new Exception ("Invalid game.");
