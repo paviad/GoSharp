@@ -109,13 +109,7 @@ namespace Go
             SizeX = fromBoard.SizeX;
             SizeY = fromBoard.SizeY;
             content = new Content[SizeX, SizeY];
-            for (int i = 0; i < SizeX; i++)
-            {
-                for (int j = 0; j < SizeY; j++)
-                {
-                    content[i, j] = fromBoard.content[i, j];
-                }
-            }
+            Array.Copy (fromBoard.content, content, content.Length);
         }
 
         /// <summary>
