@@ -79,14 +79,6 @@ namespace Go
             }
         }
 
-
-        public override string ToString ()
-        {
-            var vs = Values.Select (v => v.ToString ()).ToArray ();
-            return Name + ":" + string.Join (", ", vs);
-        }
-    }
-}
         private void ReadValue (TextReader sr)
         {
             char c = (char) sr.Read ();
@@ -139,3 +131,11 @@ namespace Go
 
             Values.Add (new SGFPropValue (sb.ToString ()));
         }
+
+        public override string ToString ()
+        {
+            var vs = Values.Select (v => v.ToString ()).ToArray ();
+            return Name + ":" + string.Join (", ", vs);
+        }
+    }
+}
