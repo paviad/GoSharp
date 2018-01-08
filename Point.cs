@@ -80,8 +80,10 @@ namespace Go
         public static Point ConvertFromSGF(string sgf)
         {
             if (sgf == "") return Game.PassMove;
-            var bb = ASCIIEncoding.ASCII.GetBytes(sgf);
-            return new Point(bb[0] - 97, bb[1] - 97);
+            var bb = ASCIIEncoding.ASCII.GetBytes (sgf);
+            int x = bb[0] >= 'a' ? bb[0] - 'a' : bb[0] - 'A' + 26;
+            int y = bb[1] >= 'a' ? bb[1] - 'a' : bb[1] - 'A' + 26;
+            return new Point (x, y);
         }
     }
 }
