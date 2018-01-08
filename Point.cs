@@ -77,12 +77,12 @@ namespace Go
         /// </summary>
         /// <param name="sgf">The point in SGF format.</param>
         /// <returns>The Point object representing the position.</returns>
-        public static Point ConvertFromSGF (string sgf)
+        public static Point ConvertFromSGF(string sgf)
         {
             if (sgf == "") return Game.PassMove;
             var bb = ASCIIEncoding.ASCII.GetBytes (sgf);
-            int x = bb[0] >= 'a' ? bb[0] - 'a' : bb[0] - 'A';
-            int y = bb[1] >= 'a' ? bb[1] - 'a' : bb[1] - 'A';
+            int x = bb[0] >= 'a' ? bb[0] - 'a' : bb[0] - 'A' + 26;
+            int y = bb[1] >= 'a' ? bb[1] - 'a' : bb[1] - 'A' + 26;
             return new Point (x, y);
         }
     }
