@@ -11,10 +11,10 @@ namespace Go
     /// </summary>
     public class Board
     {
-        Content[,] content;
-        Group[,] groupCache2;
-        List<Group> groupCache = null;
-        bool _IsScoring = false;
+        private Content[,] content;
+        private Group[,] groupCache2;
+        private List<Group> groupCache = null;
+        private bool _IsScoring = false;
 
         /// <summary>
         /// Gets the horizontal size of the board.
