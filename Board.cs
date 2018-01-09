@@ -224,11 +224,11 @@ namespace Go
         /// <param name="c">The new content at the position.</param>
         public void SetContentAt(int x, int y, Content c)
         {
-            if (x < 0)
+            if (x < 0 || x >= SizeX)
             {
                 throw new ArgumentOutOfRangeException("x", "Invalid x coordinate.");
             }
-            if (y < 0)
+            if (y < 0 || y >= SizeY)
             {
                 throw new ArgumentOutOfRangeException("y", "Invalid y coordinate.");
             }
