@@ -15,6 +15,7 @@ namespace Go
         Group[,] groupCache2;
         List<Group> groupCache = null;
         bool _IsScoring = false;
+        private int? _Hash = null;
 
         /// <summary>
         /// Gets the horizontal size of the board.
@@ -239,6 +240,7 @@ namespace Go
                 throw new ArgumentOutOfRangeException("y", "Invalid y coordinate.");
             }
             content[x, y] = c;
+            _Hash = null;
             ClearGroupCache();
         }
 
@@ -435,7 +437,7 @@ namespace Go
             groupCache = null;
         }
 
-        internal int GetContentHashCode()
+        private int GetContentHashCode()
         {
             int hc = 0, tmp;
             foreach (var i in content)
@@ -486,7 +488,11 @@ namespace Go
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return GetContentHashCode();
+            if (_Hash == null)
+            {
+                _Hash = GetContentHashCode();
+            }
+            return _Hash.Value;
         }
 
         /// <summary>
