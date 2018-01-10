@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,6 +31,30 @@ namespace Go
                 GameTrees.Add(gameTree);
                 sr.EatWS();
             }
+        }
+
+        /// <summary>
+        /// Create an SGFCollection object from a byte array.
+        /// </summary>
+        /// <param name="bytes">The source byte array.</param>
+        public static SGFCollection Create(byte[] bytes)
+        {
+            using (var ms = new MemoryStream(bytes))
+            {
+                return Create (ms);
+            }
+        }
+
+        /// <summary>
+        /// Create an SGFCollection object from a stream.
+        /// </summary>
+        public static SGFCollection Create (Stream stream)
+        {
+            var sgf = new SGFCollection ();
+            using (var tr = new StreamReader (stream, Encoding.UTF8)) {
+                sgf.Read (tr);
+            }
+            return sgf;
         }
     }
 }
