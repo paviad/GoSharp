@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
 namespace Go {
@@ -17,7 +13,7 @@ namespace Go {
         /// is encountered.
         /// </summary>
         /// <param name="tr">The TextReader object.</param>
-        public static void EatWS(this TextReader tr) {
+        public static void EatWs(this TextReader tr) {
             while (char.IsWhiteSpace((char)tr.Peek())) tr.Read();
         }
     }

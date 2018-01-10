@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using JetBrains.Annotations;
 
 namespace Go {
     /// <summary>
@@ -13,24 +11,26 @@ namespace Go {
         /// <summary>
         /// Contains the SGF sequence.
         /// </summary>
+        [PublicAPI]
         public SGFSequence Sequence = new SGFSequence();
 
         /// <summary>
         /// Contains a list of SGF game-tree objects.
         /// </summary>
+        [PublicAPI]
         public List<SGFGameTree> GameTrees = new List<SGFGameTree>();
 
         internal void Read(TextReader sr) {
-            char c = (char)sr.Read();
+            var c = (char)sr.Read();
             if (c != '(')
                 throw new InvalidDataException("Game-tree doesn't begin with a '('.");
             Sequence.Read(sr);
-            sr.EatWS();
+            sr.EatWs();
             while ((char)sr.Peek() == '(') {
-                SGFGameTree gameTree = new SGFGameTree();
+                var gameTree = new SGFGameTree();
                 gameTree.Read(sr);
                 GameTrees.Add(gameTree);
-                sr.EatWS();
+                sr.EatWs();
             }
             c = (char)sr.Read();
             if (c != ')')

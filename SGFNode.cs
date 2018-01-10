@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using JetBrains.Annotations;
 
 namespace Go {
     /// <summary>
@@ -13,18 +11,19 @@ namespace Go {
         /// <summary>
         /// Contains a list of SGF properties.
         /// </summary>
+        [PublicAPI]
         public List<SGFProperty> Properties = new List<SGFProperty>();
 
         internal void Read(TextReader sr) {
-            char c = (char)sr.Read();
+            var c = (char)sr.Read();
             if (c != ';')
                 throw new InvalidDataException("Node doesn't begin with a ';'.");
-            sr.EatWS();
+            sr.EatWs();
             while (char.IsUpper((char)sr.Peek())) {
-                SGFProperty prop = new SGFProperty();
+                var prop = new SGFProperty();
                 prop.Read(sr);
                 Properties.Add(prop);
-                sr.EatWS();
+                sr.EatWs();
             }
         }
     }

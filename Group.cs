@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Go {
     /// <summary>
@@ -12,30 +9,23 @@ namespace Go {
     /// purposes).
     /// </summary>
     public class Group {
-        private HashSet<Point> points = new HashSet<Point>(), neighbours = new HashSet<Point>();
+        private readonly HashSet<Point> _points = new HashSet<Point>();
+        private readonly HashSet<Point> _neighbours = new HashSet<Point>();
 
         /// <summary>
         /// Gets the content of the group.
         /// </summary>
-        public Content Content { get; private set; }
+        public Content Content { get; }
 
         /// <summary>
         /// Gets an enumerator for the neighboring coordinates of the group.
         /// </summary>
-        public IEnumerable<Point> Neighbours {
-            get {
-                return neighbours;
-            }
-        }
+        public IEnumerable<Point> Neighbours => _neighbours;
 
         /// <summary>
         /// Gets an enumerator for the coordinates contained in this group.
         /// </summary>
-        public IEnumerable<Point> Points {
-            get {
-                return points;
-            }
-        }
+        public IEnumerable<Point> Points => _points;
 
         /// <summary>
         /// Gets or sets whether this group is dead for the purposes of scoring.
@@ -61,7 +51,7 @@ namespace Go {
         /// <param name="x">The X coordinate of the point.</param>
         /// <param name="y">The Y coordinate of the point.</param>
         public void AddPoint(int x, int y) {
-            points.Add(new Point(x, y));
+            _points.Add(new Point(x, y));
         }
 
         /// <summary>
@@ -71,7 +61,7 @@ namespace Go {
         /// <param name="y">The Y coordinate of the point.</param>
         /// <returns>Returns true if the point is contained in the group.</returns>
         public bool ContainsPoint(int x, int y) {
-            return points.Contains(new Point(x, y));
+            return _points.Contains(new Point(x, y));
         }
 
         /// <summary>
@@ -80,7 +70,7 @@ namespace Go {
         /// <param name="x">The X coordinate of the neighbour.</param>
         /// <param name="y">The Y coordinate of the neighbour.</param>
         public void AddNeighbour(int x, int y) {
-            neighbours.Add(new Point(x, y));
+            _neighbours.Add(new Point(x, y));
         }
 
         /// <summary>
@@ -88,9 +78,9 @@ namespace Go {
         /// </summary>
         /// <returns>Returns a string representation of the group as a list of points.</returns>
         public override string ToString() {
-            if (points.Count == 0) return Content.ToString() + ":{}";
-            string rc = Content.ToString() + ":{";
-            foreach (var p in points) rc += p.ToString() + ",";
+            if (_points.Count == 0) return Content.ToString() + ":{}";
+            var rc = Content.ToString() + ":{";
+            foreach (var p in _points) rc += p.ToString() + ",";
             rc = rc.Substring(0, rc.Length - 1) + "}";
             return rc;
         }

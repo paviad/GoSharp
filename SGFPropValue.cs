@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using JetBrains.Annotations;
 
 namespace Go {
     /// <summary>
@@ -17,73 +15,59 @@ namespace Go {
         /// <summary>
         /// Returns true if the property value is a composed value (value ':' value).
         /// </summary>
-        public bool IsComposed { get { return Value.Contains(':'); } }
+        public bool IsComposed => Value.Contains(':');
 
         /// <summary>
         /// Gets the first value of a composed value.
         /// </summary>
-        public string ValX { get { return Value.Split(':')[0]; } }
+        [PublicAPI]
+        public string ValX => Value.Split(':')[0];
 
         /// <summary>
         /// Gets the second value of a composed value.
         /// </summary>
-        public string ValY { get { return Value.Split(':')[1]; } }
+        [PublicAPI]
+        public string ValY => Value.Split(':')[1];
 
         /// <summary>
         /// Gets the first integer of a composed value.
         /// </summary>
-        public int NumX { get { return int.Parse(ValX); } }
+        public int NumX => int.Parse(ValX);
 
         /// <summary>
         /// Gets the second integer of a composed value.
         /// </summary>
-        public int NumY { get { return int.Parse(ValY); } }
+        public int NumY => int.Parse(ValY);
 
         /// <summary>
         /// Gets the property value as an integer.
         /// </summary>
-        public int Num { get { return int.Parse(Value); } }
+        public int Num => int.Parse(Value);
 
         /// <summary>
         /// Gets the property value as a real number.
         /// </summary>
-        public double Double { get { return double.Parse(Value); } }
+        public double Double => double.Parse(Value);
 
         /// <summary>
         /// Gets the property value as a move object (Point).
         /// </summary>
-        public Point Move {
-            get {
-                return Point.ConvertFromSGF(Value);
-            }
-        }
+        public Point Move => Point.ConvertFromSGF(Value);
 
         /// <summary>
         /// Gets the first move object of a composed value.
         /// </summary>
-        public Point MoveA {
-            get {
-                return Point.ConvertFromSGF(ValX);
-            }
-        }
+        public Point MoveA => Point.ConvertFromSGF(ValX);
 
         /// <summary>
         /// Gets the second move object of a composed value.
         /// </summary>
-        public Point MoveB {
-            get {
-                return Point.ConvertFromSGF(ValY);
-            }
-        }
+        public Point MoveB => Point.ConvertFromSGF(ValY);
 
         /// <summary>
         /// Gets the property value as a color object (Content enum).
         /// </summary>
-        public Content Turn {
-            get {
-                return Value == "W" ? Content.White : Content.Black;
-            }
-        }
+        public Content Turn => Value == "W" ? Content.White : Content.Black;
 
         /// <summary>
         /// Construct an SGFPropValue object using the specified value.
@@ -93,6 +77,7 @@ namespace Go {
             Value = v;
         }
 
+        /// <inheritdoc />
         public override string ToString() {
             return Value;
         }

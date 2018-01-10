@@ -1,7 +1,7 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Go {
     /// <summary>
@@ -9,20 +9,20 @@ namespace Go {
     /// supports scoring mode by setting the IsScoring property to true.
     /// </summary>
     public class Board {
-        private Content[,] content;
-        private Group[,] groupCache2;
-        private List<Group> groupCache = null;
-        private bool _IsScoring = false;
+        private readonly Content[,] _content;
+        private Group[,] _groupCache2;
+        private List<Group> _groupCache;
+        private bool _isScoring;
 
         /// <summary>
         /// Gets the horizontal size of the board.
         /// </summary>
-        public int SizeX { get; private set; }
+        public int SizeX { get; }
 
         /// <summary>
         /// Gets the vertical size of the board.
         /// </summary>
-        public int SizeY { get; private set; }
+        public int SizeY { get; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether this board is in scoring mode.
@@ -30,15 +30,16 @@ namespace Go {
         /// and all dead groups are reinstated. To reset the scoring process, set this
         /// property to false and then to true again, or alternatively call ResetScoring.
         /// </summary>
+        [PublicAPI]
         public bool IsScoring {
-            get {
-                return _IsScoring;
-            }
+            get => _isScoring;
             set {
-                if (_IsScoring != value) {
-                    _IsScoring = value;
+                if (_isScoring != value) {
+                    _isScoring = value;
                     ClearGroupCache();
-                    if (value) CalcTerritory();
+                    if (value) {
+                        CalcTerritory();
+                    }
                 }
             }
         }
@@ -49,24 +50,35 @@ namespace Go {
         /// If SetDeadGroup is called, this property must be retrieved again to get
         /// the updated score.
         /// </summary>
+        [PublicAPI]
         public Dictionary<Content, int> Territory {
             get {
-                Dictionary<Content, int> rc = new Dictionary<Content, int>();
+                var rc = new Dictionary<Content, int>();
                 int w = 0, b = 0;
-                foreach (var p in groupCache.Where(x => x.Content == Content.Empty)) {
+                foreach (var p in _groupCache.Where(x => x.Content == Content.Empty)) {
                     if (p.Neighbours.All(x => GetContentAt(x) != Content.Black)) {
                         w += p.Points.Count();
                         p.Territory = Content.White;
-                    } else if (p.Neighbours.All(x => GetContentAt(x) != Content.White)) {
+                    }
+                    else if (p.Neighbours.All(x => GetContentAt(x) != Content.White)) {
                         b += p.Points.Count();
                         p.Territory = Content.Black;
-                    } else p.Territory = Content.Empty;
+                    }
+                    else {
+                        p.Territory = Content.Empty;
+                    }
                 }
-                foreach (var p in groupCache.Where(x => x.IsDead)) {
-                    if (p.Content == Content.Black)
-                        w += p.Points.Count() * 2;
-                    else if (p.Content == Content.White)
-                        b += p.Points.Count() * 2;
+                foreach (var p in _groupCache.Where(x => x.IsDead)) {
+                    switch (p.Content) {
+                        case Content.Black:
+                            w += p.Points.Count() * 2;
+                            break;
+                        case Content.White:
+                            b += p.Points.Count() * 2;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                 }
                 rc[Content.Black] = b;
                 rc[Content.White] = w;
@@ -80,7 +92,7 @@ namespace Go {
         /// <param name="sx">The horizontal size of the board.</param>
         /// <param name="sy">The vertical size of the board.</param>
         public Board(int sx, int sy) {
-            content = new Content[sx, sy];
+            _content = new Content[sx, sy];
             SizeX = sx;
             SizeY = sy;
         }
@@ -92,8 +104,8 @@ namespace Go {
         public Board(Board fromBoard) {
             SizeX = fromBoard.SizeX;
             SizeY = fromBoard.SizeY;
-            content = new Content[SizeX, SizeY];
-            Array.Copy(fromBoard.content, content, content.Length);
+            _content = new Content[SizeX, SizeY];
+            Array.Copy(fromBoard._content, _content, _content.Length);
         }
 
         /// <summary>
@@ -104,17 +116,19 @@ namespace Go {
         /// </summary>
         /// <param name="c">The board content (0-empty, 1-black, 2-white).</param>
         public Board(params int[] c) {
-            if (c.Length == 0)
+            if (c.Length == 0) {
                 throw new InvalidOperationException("Must provide some arguments.");
-            double d = Math.Sqrt(c.Length);
-            int id = (int)d;
-            if (id != d)
+            }
+            var d = Math.Sqrt(c.Length);
+            var id = (int)d;
+            if (id != d) {
                 throw new InvalidOperationException("Argument count must be a square of a natural number.");
+            }
             SizeX = SizeY = id;
-            content = new Content[id, id];
+            _content = new Content[id, id];
             int y = 0, x = 0;
-            for (int i = 0; i < c.Length; i++) {
-                content[x, y] = (Content)c[i];
+            foreach (var element in c) {
+                _content[x, y] = (Content)element;
                 x++;
                 if (x == SizeX) {
                     x = 0;
@@ -132,12 +146,8 @@ namespace Go {
         /// <param name="y">The Y coordinate of the position.</param>
         /// <returns></returns>
         public Content this[int x, int y] {
-            get {
-                return GetContentAt(x, y);
-            }
-            set {
-                SetContentAt(x, y, value);
-            }
+            get => GetContentAt(x, y);
+            set => SetContentAt(x, y, value);
         }
 
         /// <summary>
@@ -147,13 +157,10 @@ namespace Go {
         /// </summary>
         /// <param name="n">The coordinates of the position.</param>
         /// <returns></returns>
+        [PublicAPI]
         public Content this[Point n] {
-            get {
-                return GetContentAt(n.x, n.y);
-            }
-            set {
-                SetContentAt(n.x, n.y, value);
-            }
+            get => GetContentAt(n.X, n.Y);
+            set => SetContentAt(n.X, n.Y, value);
         }
 
         /// <summary>
@@ -161,8 +168,9 @@ namespace Go {
         /// </summary>
         /// <param name="n">The coordinates of the position.</param>
         /// <returns></returns>
+        [PublicAPI]
         public Content GetContentAt(Point n) {
-            return GetContentAt(n.x, n.y);
+            return GetContentAt(n.X, n.Y);
         }
 
         /// <summary>
@@ -171,10 +179,15 @@ namespace Go {
         /// <param name="x">The X coordinate of the position.</param>
         /// <param name="y">The Y coordinate of the position.</param>
         /// <returns></returns>
+        [PublicAPI]
         public Content GetContentAt(int x, int y) {
-            if (IsScoring && content[x, y] != Content.Empty && groupCache2[x, y] != null && groupCache2[x, y].IsDead)
+            if (IsScoring
+                && _content[x, y] != Content.Empty
+                && _groupCache2[x, y] != null
+                && _groupCache2[x, y].IsDead) {
                 return Content.Empty;
-            return content[x, y];
+            }
+            return _content[x, y];
         }
 
         /// <summary>
@@ -183,8 +196,9 @@ namespace Go {
         /// </summary>
         /// <param name="p">The coordinates of the position.</param>
         /// <param name="content">The new content at the position.</param>
+        [PublicAPI]
         public void SetContentAt(Point p, Content content) {
-            SetContentAt(p.x, p.y, content);
+            SetContentAt(p.X, p.Y, content);
         }
 
         /// <summary>
@@ -194,14 +208,15 @@ namespace Go {
         /// <param name="x">The X coordinate of the position.</param>
         /// <param name="y">The Y coordinate of the position.</param>
         /// <param name="c">The new content at the position.</param>
+        [PublicAPI]
         public void SetContentAt(int x, int y, Content c) {
             if (x < 0 || x >= SizeX) {
-                throw new ArgumentOutOfRangeException("x", "Invalid x coordinate.");
+                throw new ArgumentOutOfRangeException(nameof(x), "Invalid x coordinate.");
             }
             if (y < 0 || y >= SizeY) {
-                throw new ArgumentOutOfRangeException("y", "Invalid y coordinate.");
+                throw new ArgumentOutOfRangeException(nameof(y), "Invalid y coordinate.");
             }
-            content[x, y] = c;
+            _content[x, y] = c;
             ClearGroupCache();
         }
 
@@ -210,8 +225,9 @@ namespace Go {
         /// </summary>
         /// <param name="n">The coordinates of the position.</param>
         /// <returns>A group object containing a list of points.</returns>
+        [PublicAPI]
         public Group GetGroupAt(Point n) {
-            return GetGroupAt(n.x, n.y);
+            return GetGroupAt(n.X, n.Y);
         }
 
         /// <summary>
@@ -221,28 +237,42 @@ namespace Go {
         /// <param name="y">The Y coordinate of the position.</param>
         /// <returns>A group object containing a list of points.</returns>
         public Group GetGroupAt(int x, int y) {
-            if (groupCache == null) {
-                groupCache = new List<Group>();
-                groupCache2 = new Group[SizeX, SizeY];
+            if (_groupCache == null) {
+                _groupCache = new List<Group>();
+                _groupCache2 = new Group[SizeX, SizeY];
             }
-            Group group = groupCache.SingleOrDefault(z => z.Points.Contains(new Point(x, y)));
+            var group = _groupCache.SingleOrDefault(z => z.Points.Contains(new Point(x, y)));
             if (group == null) {
-                group = new Group(content[x, y]);
+                group = new Group(_content[x, y]);
                 RecursiveAddPoint(group, x, y);
-                groupCache.Add(group);
+                _groupCache.Add(group);
             }
             return group;
         }
         private void RecursiveAddPoint(Group group, int x, int y) {
             if (GetContentAt(x, y) == group.Content) {
-                if (group.ContainsPoint(x, y)) return;
+                if (group.ContainsPoint(x, y)) {
+                    return;
+                }
                 group.AddPoint(x, y);
-                groupCache2[x, y] = group;
-                if (x > 0) RecursiveAddPoint(group, x - 1, y);
-                if (x < SizeX - 1) RecursiveAddPoint(group, x + 1, y);
-                if (y > 0) RecursiveAddPoint(group, x, y - 1);
-                if (y < SizeY - 1) RecursiveAddPoint(group, x, y + 1);
-            } else {
+                _groupCache2[x, y] = group;
+                if (x > 0) {
+                    RecursiveAddPoint(group, x - 1, y);
+                }
+
+                if (x < SizeX - 1) {
+                    RecursiveAddPoint(group, x + 1, y);
+                }
+
+                if (y > 0) {
+                    RecursiveAddPoint(group, x, y - 1);
+                }
+
+                if (y < SizeY - 1) {
+                    RecursiveAddPoint(group, x, y + 1);
+                }
+            }
+            else {
                 group.AddNeighbour(x, y);
             }
         }
@@ -252,12 +282,9 @@ namespace Go {
         /// </summary>
         /// <param name="group">The group object.</param>
         /// <returns>The number of liberties of the specified group.</returns>
+        [PublicAPI]
         public int GetLiberties(Group group) {
-            int libs = 0;
-            foreach (var n in group.Neighbours) {
-                if (GetContentAt(n) == Content.Empty) libs++;
-            }
-            return libs;
+            return @group.Neighbours.Count(n => GetContentAt(n) == Content.Empty);
         }
 
         /// <summary>
@@ -277,17 +304,18 @@ namespace Go {
         /// </summary>
         /// <param name="n">The coordinates of the position.</param>
         /// <returns>The number of liberties.</returns>
+        [PublicAPI]
         public int GetLiberties(Point n) {
-            return GetLiberties(n.x, n.y);
+            return GetLiberties(n.X, n.Y);
         }
 
         private void CalcTerritory() {
-            bool pass = true;
+            var pass = true;
             while (pass) {
                 pass = false;
-                for (int i = 0; i < SizeX; i++) {
-                    for (int j = 0; j < SizeY; j++) {
-                        if (groupCache2[i, j] == null) {
+                for (var i = 0; i < SizeX; i++) {
+                    for (var j = 0; j < SizeY; j++) {
+                        if (_groupCache2[i, j] == null) {
                             GetGroupAt(i, j);
                             pass = true;
                         }
@@ -301,8 +329,9 @@ namespace Go {
         /// the board is not in scoring mode (see the IsScoring property).
         /// </summary>
         /// <param name="n">The coordinates of the position of a stone in the group.</param>
+        [PublicAPI]
         public void SetDeadGroup(Point n) {
-            SetDeadGroup(n.x, n.y);
+            SetDeadGroup(n.X, n.Y);
         }
 
         /// <summary>
@@ -311,32 +340,42 @@ namespace Go {
         /// </summary>
         /// <param name="x">The X coordinate of a position belonging to the group.</param>
         /// <param name="y">The Y coordinate of a position belonging to the group.</param>
+        [PublicAPI]
         public void SetDeadGroup(int x, int y) {
-            Group g = GetGroupAt(x, y);
-            if (g.Content == Content.Empty) return;
+            var g = GetGroupAt(x, y);
+            if (g.Content == Content.Empty) {
+                return;
+            }
             g.IsDead = !g.IsDead;
         }
 
         /// <summary>
         /// Resets the scoring process, unmarking dead groups.
         /// </summary>
+        [PublicAPI]
         public void ResetScoring() {
-            if (!IsScoring) return;
+            if (!IsScoring) {
+                return;
+            }
             ClearGroupCache();
             CalcTerritory();
         }
 
         internal List<Group> GetCapturedGroups(int x, int y) {
-            Group group = GetGroupAt(x, y);
-            List<Group> captures = new List<Group>();
+            GetGroupAt(x, y);
+            var captures = new List<Group>();
             var stoneNeighbours = GetStoneNeighbours(x, y);
             foreach (var n in stoneNeighbours) {
                 if (GetContentAt(n) != Content.Empty) {
-                    Group ngroup = GetGroupAt(n);
-                    if (ngroup.ContainsPoint(x, y)) continue; // Don't consider self group
+                    var ngroup = GetGroupAt(n);
+                    if (ngroup.ContainsPoint(x, y)) {
+                        // Don't consider self group
+                        continue;
+                    }
                     if (GetLiberties(ngroup) == 0) {
-                        if (!captures.Any(g => g.Points.Intersect(ngroup.Points).Any()))
+                        if (!captures.Any(g => g.Points.Intersect(ngroup.Points).Any())) {
                             captures.Add(ngroup);
+                        }
                     }
                 }
             }
@@ -344,35 +383,43 @@ namespace Go {
         }
 
         private List<Point> GetStoneNeighbours(int x, int y) {
-            List<Point> rc = new List<Point>();
-            if (x > 0) rc.Add(new Point(x - 1, y));
-            if (x < SizeX - 1) rc.Add(new Point(x + 1, y));
-            if (y > 0) rc.Add(new Point(x, y - 1));
-            if (y < SizeY - 1) rc.Add(new Point(x, y + 1));
+            var rc = new List<Point>();
+            if (x > 0) {
+                rc.Add(new Point(x - 1, y));
+            }
+
+            if (x < SizeX - 1) {
+                rc.Add(new Point(x + 1, y));
+            }
+
+            if (y > 0) {
+                rc.Add(new Point(x, y - 1));
+            }
+
+            if (y < SizeY - 1) {
+                rc.Add(new Point(x, y + 1));
+            }
             return rc;
         }
 
         internal int Capture(IEnumerable<Group> captures) {
-            int rc = 0;
-            foreach (var g in captures) {
-                rc += Capture(g);
-            }
-            return rc;
+            return captures.Sum(Capture);
         }
         internal int Capture(Group g) {
-            foreach (var p in g.Points)
+            foreach (var p in g.Points) {
                 SetContentAt(p, Content.Empty);
+            }
             return g.Points.Count();
         }
 
         private void ClearGroupCache() {
-            groupCache = null;
+            _groupCache = null;
         }
 
         internal int GetContentHashCode() {
-            int hc = 0, tmp;
-            foreach (var i in content) {
-                tmp = hc >> 30;
+            var hc = 0;
+            foreach (var i in _content) {
+                var tmp = hc >> 30;
                 hc <<= 2;
                 hc ^= (int)i ^ tmp;
             }
@@ -388,18 +435,38 @@ namespace Go {
         /// </summary>
         /// <returns>Returns the multi-line string representation of the board.</returns>
         public override string ToString() {
-            string rc = "";
-            for (int i = 0; i < SizeY; i++) {
-                for (int j = 0; j < SizeX; j++) {
-                    if (content[j, i] == Content.Empty) rc += ".";
-                    else if (content[j, i] == Content.Black) rc += "X";
-                    else rc += "O";
+            var rc = "";
+            for (var i = 0; i < SizeY; i++) {
+                for (var j = 0; j < SizeX; j++) {
+                    switch (_content[j, i]) {
+                        case Content.Empty:
+                            rc += ".";
+                            break;
+                        case Content.Black:
+                            rc += "X";
+                            break;
+                        case Content.White:
+                            rc += "O";
+                            break;
+                    }
                     if (IsScoring) {
-                        Group g = groupCache2[j, i];
-                        if (g.IsDead) rc += "D";
-                        else if (g.Territory == Content.Empty) rc += ".";
-                        else if (g.Territory == Content.Black) rc += "x";
-                        else if (g.Territory == Content.White) rc += "o";
+                        var g = _groupCache2[j, i];
+                        if (g.IsDead) {
+                            rc += "D";
+                        }
+                        else {
+                            switch (g.Territory) {
+                                case Content.Empty:
+                                    rc += ".";
+                                    break;
+                                case Content.Black:
+                                    rc += "x";
+                                    break;
+                                case Content.White:
+                                    rc += "o";
+                                    break;
+                            }
+                        }
                     }
                     rc += " ";
                 }
@@ -419,6 +486,7 @@ namespace Go {
         /// <summary>
         /// Represents a position and a content at that position.
         /// </summary>
+        [PublicAPI]
         public struct PositionContent {
             /// <summary>
             /// The position point.
@@ -434,13 +502,14 @@ namespace Go {
         /// <summary>
         /// Returns an enumerable representing all occupied board spots.
         /// </summary>
+        [PublicAPI]
         public IEnumerable<PositionContent> AllStones {
             get {
-                for (int i = 0; i < SizeX; i++) {
-                    for (int j = 0; j < SizeY; j++) {
-                        if (content[i, j] != Content.Empty)
+                for (var i = 0; i < SizeX; i++) {
+                    for (var j = 0; j < SizeY; j++) {
+                        if (_content[i, j] != Content.Empty)
                             yield return new PositionContent {
-                                Content = content[i, j],
+                                Content = _content[i, j],
                                 Position = new Point(i, j)
                             };
                     }
@@ -451,12 +520,14 @@ namespace Go {
         /// <summary>
         /// Returns an enumerable representing all empty board spots.
         /// </summary>
+        [PublicAPI]
         public IEnumerable<Point> EmptySpaces {
             get {
-                for (int i = 0; i < SizeX; i++) {
-                    for (int j = 0; j < SizeY; j++) {
-                        if (content[i, j] == Content.Empty)
+                for (var i = 0; i < SizeX; i++) {
+                    for (var j = 0; j < SizeY; j++) {
+                        if (_content[i, j] == Content.Empty) {
                             yield return new Point(i, j);
+                        }
                     }
                 }
             }

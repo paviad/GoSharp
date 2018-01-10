@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace Go {
-    class Variation {
-        public Point Move { get; set; }
-        public Game Game { get; set; }
+    internal class Variation {
+        public Point Move { get; }
+        public Game Game { get; }
 
         public Variation(Point move, Game game) {
             Move = move;

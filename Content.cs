@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace Go {
     /// <summary>
     /// Used to represent the content of a board position, or the color of territory.

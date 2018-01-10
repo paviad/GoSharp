@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using JetBrains.Annotations;
 
 namespace Go {
     /// <summary>
@@ -23,25 +23,23 @@ namespace Go {
         /// <summary>
         /// Returns true if this property is a move property.
         /// </summary>
-        public bool IsMove { get { return Name == "W" || Name == "B"; } }
+        [PublicAPI]
+        public bool IsMove => Name == "W" || Name == "B";
 
         /// <summary>
         /// Returns true if this property is a setup property.
         /// </summary>
-        public bool IsSetup { get { return Name == "AE" || Name == "AB" || Name == "AW" || Name == "PL"; } }
+        [PublicAPI]
+        public bool IsSetup => Name == "AE" || Name == "AB" || Name == "AW" || Name == "PL";
 
-        private HashSet<string> moveProperties = new HashSet<string>
+        private readonly HashSet<string> _moveProperties = new HashSet<string>
         {
             "W","B","AB","AW","AE"
         };
         /// <summary>
         /// Returns true if this property is a file format property.
         /// </summary>
-        public bool IsRoot {
-            get {
-                return !moveProperties.Contains(Name);
-            }
-        }
+        public bool IsRoot => !_moveProperties.Contains(Name);
 
         /// <summary>
         /// Returns the property priority when writing an SGF file.
@@ -49,33 +47,32 @@ namespace Go {
         public int Priority {
             get {
                 if (IsRoot) return 0;
-                if (IsSetup) return 1;
-                if (IsMove) return 2;
-                return 3;
+                else if (IsSetup) return 1;
+                else if (IsMove) return 2;
+                else return 3;
             }
         }
 
         internal void Read(TextReader sr) {
-            char c;
             Name = "";
-            sr.EatWS();
+            sr.EatWs();
             while (char.IsUpper((char)sr.Peek())) {
-                c = (char)sr.Read();
+                var c = (char)sr.Read();
                 Name += c;
             }
-            sr.EatWS();
+            sr.EatWs();
             while (sr.Peek() == '[') {
                 ReadValue(sr);
-                sr.EatWS();
+                sr.EatWs();
             }
         }
 
         private void ReadValue(TextReader sr) {
-            char c = (char)sr.Read();
+            var c = (char)sr.Read();
             if (c != '[')
                 throw new InvalidDataException("Property value doesn't begin with a '['.");
 
-            bool verbatim = false;
+            var verbatim = false;
             var sb = new StringBuilder();
 
             for (; ; ) {
@@ -121,6 +118,7 @@ namespace Go {
             Values.Add(new SGFPropValue(sb.ToString()));
         }
 
+        /// <inheritdoc />
         public override string ToString() {
             var vs = Values.Select(v => v.ToString()).ToArray();
             return Name + ":" + string.Join(", ", vs);

@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
+using JetBrains.Annotations;
 
 namespace Go {
     /// <summary>
@@ -13,15 +12,16 @@ namespace Go {
         /// <summary>
         /// Contains a list of SGF nodes.
         /// </summary>
+        [PublicAPI]
         public List<SGFNode> Nodes = new List<SGFNode>();
 
         internal void Read(TextReader sr) {
-            sr.EatWS();
+            sr.EatWs();
             while ((char)sr.Peek() == ';') {
-                SGFNode node = new SGFNode();
+                var node = new SGFNode();
                 node.Read(sr);
                 Nodes.Add(node);
-                sr.EatWS();
+                sr.EatWs();
             }
         }
 

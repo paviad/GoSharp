@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using JetBrains.Annotations;
 
 namespace Go {
     /// <summary>
@@ -13,6 +11,7 @@ namespace Go {
         /// <summary>
         /// Contains a list of SGF game-tree objects.
         /// </summary>
+        [PublicAPI]
         public List<SGFGameTree> GameTrees = new List<SGFGameTree>();
 
         /// <summary>
@@ -20,12 +19,12 @@ namespace Go {
         /// </summary>
         /// <param name="sr">The source TextReader.</param>
         public void Read(TextReader sr) {
-            sr.EatWS();
+            sr.EatWs();
             while ((char)sr.Peek() == '(') {
                 var gameTree = new SGFGameTree();
                 gameTree.Read(sr);
                 GameTrees.Add(gameTree);
-                sr.EatWS();
+                sr.EatWs();
             }
         }
     }
