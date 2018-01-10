@@ -1,15 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Go
-{
+namespace Go {
     /// <summary>
     /// Used to represent the content of a board position, or the color of territory.
     /// </summary>
-    public enum Content
-    {
+    public enum Content {
         /// <summary>
         /// An empty board position, or unowned territory.
         /// </summary>

@@ -1,16 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Go
-{
+namespace Go {
     /// <summary>
     /// Represents an SGF property-value, see the SGF specification at
     /// <a href="http://www.red-bean.com/sgf">http://www.red-bean.com/sgf</a>
     /// </summary>
-    public class SGFPropValue
-    {
+    public class SGFPropValue {
         /// <summary>
         /// Contains the property value.
         /// </summary>
@@ -54,10 +52,8 @@ namespace Go
         /// <summary>
         /// Gets the property value as a move object (Point).
         /// </summary>
-        public Point Move
-        {
-            get
-            {
+        public Point Move {
+            get {
                 return Point.ConvertFromSGF(Value);
             }
         }
@@ -65,10 +61,8 @@ namespace Go
         /// <summary>
         /// Gets the first move object of a composed value.
         /// </summary>
-        public Point MoveA
-        {
-            get
-            {
+        public Point MoveA {
+            get {
                 return Point.ConvertFromSGF(ValX);
             }
         }
@@ -76,10 +70,8 @@ namespace Go
         /// <summary>
         /// Gets the second move object of a composed value.
         /// </summary>
-        public Point MoveB
-        {
-            get
-            {
+        public Point MoveB {
+            get {
                 return Point.ConvertFromSGF(ValY);
             }
         }
@@ -87,11 +79,9 @@ namespace Go
         /// <summary>
         /// Gets the property value as a color object (Content enum).
         /// </summary>
-        public Content Turn
-        {
-            get
-            {
-                return Value=="W" ? Content.White : Content.Black;
+        public Content Turn {
+            get {
+                return Value == "W" ? Content.White : Content.Black;
             }
         }
 
@@ -99,13 +89,11 @@ namespace Go
         /// Construct an SGFPropValue object using the specified value.
         /// </summary>
         /// <param name="v">The value of the SGFPropValue.</param>
-        public SGFPropValue(string v)
-        {
+        public SGFPropValue(string v) {
             Value = v;
         }
 
-        public override string ToString ()
-        {
+        public override string ToString() {
             return Value;
         }
     }

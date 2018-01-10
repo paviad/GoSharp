@@ -1,15 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Go
-{
+namespace Go {
     /// <summary>
     /// Provides information used to create the root node of a game tree.
     /// </summary>
-    public class GameInfo
-    {
+    public class GameInfo {
         /// <summary>
         /// Gets or sets the handicap value.
         /// </summary>
@@ -53,8 +51,7 @@ namespace Go
         /// Constructs a default GameInfo object, with 0 handicap, 5.5 komi 19x19 board and
         /// black as the starting player.
         /// </summary>
-        public GameInfo()
-        {
+        public GameInfo() {
             Komi = 5.5;
             StartingPlayer = Content.Black;
             Handicap = 0;

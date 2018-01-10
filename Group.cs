@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Go
-{
+namespace Go {
     /// <summary>
     /// Represents a group of stones (or empty spaces) on a board object. This
     /// object is context-free, i.e. it is not associated with a specific board.
@@ -12,8 +11,7 @@ namespace Go
     /// content (black, white or empty), and state (dead or alive for scoring
     /// purposes).
     /// </summary>
-    public class Group
-    {
+    public class Group {
         private HashSet<Point> points = new HashSet<Point>(), neighbours = new HashSet<Point>();
 
         /// <summary>
@@ -24,10 +22,8 @@ namespace Go
         /// <summary>
         /// Gets an enumerator for the neighboring coordinates of the group.
         /// </summary>
-        public IEnumerable<Point> Neighbours
-        {
-            get
-            {
+        public IEnumerable<Point> Neighbours {
+            get {
                 return neighbours;
             }
         }
@@ -35,10 +31,8 @@ namespace Go
         /// <summary>
         /// Gets an enumerator for the coordinates contained in this group.
         /// </summary>
-        public IEnumerable<Point> Points
-        {
-            get
-            {
+        public IEnumerable<Point> Points {
+            get {
                 return points;
             }
         }
@@ -57,8 +51,7 @@ namespace Go
         /// Constructs a group object of specified content.
         /// </summary>
         /// <param name="c">The group content.</param>
-        public Group(Content c)
-        {
+        public Group(Content c) {
             Content = c;
         }
 
@@ -67,8 +60,7 @@ namespace Go
         /// </summary>
         /// <param name="x">The X coordinate of the point.</param>
         /// <param name="y">The Y coordinate of the point.</param>
-        public void AddPoint(int x, int y)
-        {
+        public void AddPoint(int x, int y) {
             points.Add(new Point(x, y));
         }
 
@@ -78,8 +70,7 @@ namespace Go
         /// <param name="x">The X coordinate of the point.</param>
         /// <param name="y">The Y coordinate of the point.</param>
         /// <returns>Returns true if the point is contained in the group.</returns>
-        public bool ContainsPoint(int x, int y)
-        {
+        public bool ContainsPoint(int x, int y) {
             return points.Contains(new Point(x, y));
         }
 
@@ -88,8 +79,7 @@ namespace Go
         /// </summary>
         /// <param name="x">The X coordinate of the neighbour.</param>
         /// <param name="y">The Y coordinate of the neighbour.</param>
-        public void AddNeighbour(int x, int y)
-        {
+        public void AddNeighbour(int x, int y) {
             neighbours.Add(new Point(x, y));
         }
 
@@ -97,8 +87,7 @@ namespace Go
         /// Returns a string representation of the group as a list of points.
         /// </summary>
         /// <returns>Returns a string representation of the group as a list of points.</returns>
-        public override string ToString()
-        {
+        public override string ToString() {
             if (points.Count == 0) return Content.ToString() + ":{}";
             string rc = Content.ToString() + ":{";
             foreach (var p in points) rc += p.ToString() + ",";

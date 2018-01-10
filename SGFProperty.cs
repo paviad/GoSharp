@@ -1,17 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace Go
-{
+namespace Go {
     /// <summary>
     /// Represents an SGF property, see the SGF specification at
     /// <a href="http://www.red-bean.com/sgf">http://www.red-bean.com/sgf</a>
     /// </summary>
-    public class SGFProperty
-    {
+    public class SGFProperty {
         /// <summary>
         /// Contains the property name.
         /// </summary>
@@ -39,10 +37,8 @@ namespace Go
         /// <summary>
         /// Returns true if this property is a file format property.
         /// </summary>
-        public bool IsRoot
-        {
-            get
-            {
+        public bool IsRoot {
+            get {
                 return !moveProperties.Contains(Name);
             }
         }
@@ -50,10 +46,8 @@ namespace Go
         /// <summary>
         /// Returns the property priority when writing an SGF file.
         /// </summary>
-        public int Priority
-        {
-            get
-            {
+        public int Priority {
+            get {
                 if (IsRoot) return 0;
                 if (IsSetup) return 1;
                 if (IsMove) return 2;
@@ -61,35 +55,31 @@ namespace Go
             }
         }
 
-        internal void Read(TextReader sr)
-        {
+        internal void Read(TextReader sr) {
             char c;
             Name = "";
             sr.EatWS();
-            while (char.IsUpper((char)sr.Peek()))
-            {
+            while (char.IsUpper((char)sr.Peek())) {
                 c = (char)sr.Read();
                 Name += c;
             }
             sr.EatWS();
-            while (sr.Peek() == '[')
-            {
+            while (sr.Peek() == '[') {
                 ReadValue(sr);
                 sr.EatWS();
             }
         }
 
-        private void ReadValue (TextReader sr)
-        {
-            char c = (char) sr.Read ();
+        private void ReadValue(TextReader sr) {
+            char c = (char)sr.Read();
             if (c != '[')
-                throw new InvalidDataException ("Property value doesn't begin with a '['.");
+                throw new InvalidDataException("Property value doesn't begin with a '['.");
 
             bool verbatim = false;
-            var sb = new StringBuilder ();
+            var sb = new StringBuilder();
 
             for (; ; ) {
-                c = (char) sr.Read ();
+                c = (char)sr.Read();
 
                 /* Spec 3.2. Text/Formatting
                  * Formatting:
@@ -102,16 +92,15 @@ namespace Go
                  */
                 if (verbatim) {
                     if (c == '\r' || c == '\n') {
-                        var next = sr.Peek ();
+                        var next = sr.Peek();
                         if (next != c && (next == '\r' || next == '\n')) {
-                            sr.Read ();
+                            sr.Read();
                         }
-                    }
-                    else {
-                        if (char.IsWhiteSpace (c)) {
+                    } else {
+                        if (char.IsWhiteSpace(c)) {
                             c = ' ';
                         }
-                        sb.Append (c);
+                        sb.Append(c);
                     }
                     verbatim = false;
                     continue;
@@ -126,16 +115,15 @@ namespace Go
                     break;
                 }
 
-                sb.Append (c);
+                sb.Append(c);
             }
 
-            Values.Add (new SGFPropValue (sb.ToString ()));
+            Values.Add(new SGFPropValue(sb.ToString()));
         }
 
-        public override string ToString ()
-        {
-            var vs = Values.Select (v => v.ToString ()).ToArray ();
-            return Name + ":" + string.Join (", ", vs);
+        public override string ToString() {
+            var vs = Values.Select(v => v.ToString()).ToArray();
+            return Name + ":" + string.Join(", ", vs);
         }
     }
 }
