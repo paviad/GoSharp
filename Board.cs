@@ -11,10 +11,10 @@ namespace Go
     /// </summary>
     public class Board
     {
-        Content[,] content;
-        Group[,] groupCache2;
-        List<Group> groupCache = null;
-        bool _IsScoring = false;
+        private Content[,] content;
+        private Group[,] groupCache2;
+        private List<Group> groupCache = null;
+        private bool _IsScoring = false;
         private int? _Hash = null;
 
         /// <summary>
@@ -110,13 +110,7 @@ namespace Go
             SizeX = fromBoard.SizeX;
             SizeY = fromBoard.SizeY;
             content = new Content[SizeX, SizeY];
-            for (int i = 0; i < SizeX; i++)
-            {
-                for (int j = 0; j < SizeY; j++)
-                {
-                    content[i, j] = fromBoard.content[i, j];
-                }
-            }
+            Array.Copy (fromBoard.content, content, content.Length);
         }
 
         /// <summary>
@@ -231,11 +225,11 @@ namespace Go
         /// <param name="c">The new content at the position.</param>
         public void SetContentAt(int x, int y, Content c)
         {
-            if (x < 0)
+            if (x < 0 || x >= SizeX)
             {
                 throw new ArgumentOutOfRangeException("x", "Invalid x coordinate.");
             }
-            if (y < 0)
+            if (y < 0 || y >= SizeY)
             {
                 throw new ArgumentOutOfRangeException("y", "Invalid y coordinate.");
             }

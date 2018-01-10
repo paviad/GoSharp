@@ -14,7 +14,7 @@ namespace Go
     /// </summary>
     public class Group
     {
-        HashSet<Point> points = new HashSet<Point>(), neighbours = new HashSet<Point>();
+        private HashSet<Point> points = new HashSet<Point>(), neighbours = new HashSet<Point>();
 
         /// <summary>
         /// Gets the content of the group.
