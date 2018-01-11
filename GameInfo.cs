@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,11 +42,29 @@ namespace Go
         /// </summary>
         public Content StartingPlayer { get; set; }
 
-
+        /// <summary>
+        /// Gets or sets the name of the white player.
+        /// </summary>
         public string WhitePlayer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the black player.
+        /// </summary>
         public string BlackPlayer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rank of the white player.
+        /// </summary>
         public string WhiteRank { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rank of the black player.
+        /// </summary>
         public string BlackRank { get; set; }
+
+        /// <summary>
+        /// Gets or sets the main time of the game.
+        /// </summary>
         public TimeSpan? MainTime { get; set; }
 
         /// <summary>
