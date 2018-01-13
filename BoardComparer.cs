@@ -37,7 +37,7 @@ namespace Go
         /// <returns></returns>
         public int GetHashCode(Board obj)
         {
-            return obj.GetContentHashCode();
+            return obj.GetHashCode();
         }
     }
 }
