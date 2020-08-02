@@ -1,0 +1,14 @@
+﻿*** 5-Nov-2009 9:00
+Added ChangeLog.txt
+Added support for programmatically adding setup moves to a Game object. See the Game.SetupMove method and the Game.SetupMoves property.
+Implemented Group.ToString
+Centralized conversion of point coordinates to and from SGF format in the Point struct.
+
+*** 5-Nov-2009 10:00
+Deleted BoardExtensions.cs - Bad design, moved into Game object, to support recording handicap stone placement as setup moves.
+Added the option for free-placed handicap stones in the GameInfo object.
+Fixed a bug where the starting player was not exported or imported from SGF.
+Fixed a bug where handicap stones were not placed correctly on the 10th column.
+
+*** 6-Nov-2009 9:30
+Now correctly writing a board size node when exporting to SGF for board sizes other than 19x19.
