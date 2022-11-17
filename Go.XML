@@ -513,6 +513,31 @@
             Gets or sets the color of the starting player.
             </summary>
         </member>
+        <member name="P:Go.GameInfo.WhitePlayer">
+            <summary>
+            Gets or sets the name of the white player.
+            </summary>
+        </member>
+        <member name="P:Go.GameInfo.BlackPlayer">
+            <summary>
+            Gets or sets the name of the black player.
+            </summary>
+        </member>
+        <member name="P:Go.GameInfo.WhiteRank">
+            <summary>
+            Gets or sets the rank of the white player.
+            </summary>
+        </member>
+        <member name="P:Go.GameInfo.BlackRank">
+            <summary>
+            Gets or sets the rank of the black player.
+            </summary>
+        </member>
+        <member name="P:Go.GameInfo.MainTime">
+            <summary>
+            Gets or sets the main time of the game.
+            </summary>
+        </member>
         <member name="M:Go.GameInfo.#ctor">
             <summary>
             Constructs a default GameInfo object, with 0 handicap, 5.5 komi 19x19 board and

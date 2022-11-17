@@ -1,4 +1,4 @@
-﻿using Go;
+using Go;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
@@ -99,7 +99,9 @@ namespace GoTestProject
                 string expected = sourceText.Replace("\n", "");
                 string actual;
                 actual = target.SerializeToSGF(null);
+                actual = Regex.Replace(actual, @"\s", "");
                 actual = Regex.Replace(actual, @"A[BWE](\[[^]]+\])+", "");
+                expected = Regex.Replace(expected, @"\s", "");
                 expected = Regex.Replace(expected, @"A[BWE](\[[^]]+\])+", "");
                 Assert.AreEqual(expected, actual);
             }

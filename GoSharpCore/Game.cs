@@ -205,6 +205,11 @@ namespace GoSharpCore {
         }
 
         private void InitializeFromGameInfo() {
+            if (Root != null) {
+                // Already initialized, this represents a root node with variations
+                return;
+            }
+
             Board = new Board(GameInfo.BoardSizeX, GameInfo.BoardSizeY);
             if (GameInfo.Handicap > 0 && !GameInfo.FreePlacedHandicap)
                 SetHandicap(GameInfo.Handicap);
@@ -531,10 +536,15 @@ namespace GoSharpCore {
         [PublicAPI]
         public static List<Game> SerializeFromSGF(string path) {
             using (var sr = new StreamReader(path, Encoding.ASCII)) {
-                var coll = new SGFCollection();
-                coll.Read(sr);
-                return coll.GameTrees.Select(c => new Game(c)).ToList();
+                return SerializeFromSGF(sr);
             }
+        }
+
+        [PublicAPI]
+        public static List<Game> SerializeFromSGF(TextReader sr) {
+            var coll = new SGFCollection();
+            coll.Read(sr);
+            return coll.GameTrees.Select(c => new Game(c)).ToList();
         }
 
         private static void CreateGameTree(SGFGameTree root, Game p) {
