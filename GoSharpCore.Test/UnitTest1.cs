@@ -58,6 +58,53 @@ public class UnitTest1 {
     }
 
     [Fact]
+    public void TestDontAddIfIllegal() {
+        var gi = new GameInfo {
+            Handicap = 0,
+            StartingPlayer = Content.Black,
+            Komi = 6.5,
+        };
+        var gameInitial = new Game(gi);
+        Game game;
+        bool legal;
+
+        game = gameInitial;
+        var result = gameInitial.SerializeToSGF(null); // (;KM[6.50]SZ[19])
+
+        game = game.MakeMove(3, 3, out legal);
+        var result2 = gameInitial.SerializeToSGF(null); // (;KM[6.50]SZ[19];B[dd])
+
+        game = game.MakeMove(3, 3, out legal, dontAddVariationIfIllegal: true);
+        var result3 = gameInitial.SerializeToSGF(null); // (;KM[6.50]SZ[19];B[dd])
+        Assert.Equal(result2, result3);
+    }
+
+    [Fact]
+    public void TestRemoveVariation() {
+        var gi = new GameInfo {
+            Handicap = 0,
+            StartingPlayer = Content.Black,
+            Komi = 6.5,
+        };
+        var gameInitial = new Game(gi);
+        Game game;
+        bool legal;
+
+        game = gameInitial;
+        var result = gameInitial.SerializeToSGF(null); // (;KM[6.50]SZ[19])
+
+        game = game.MakeMove(3, 3, out legal);
+        var result2 = gameInitial.SerializeToSGF(null); // (;KM[6.50]SZ[19];B[dd])
+
+        var game2 = game.MakeMove(3, 3, out legal, dontAddVariationIfIllegal: false);
+        var result3 = gameInitial.SerializeToSGF(null); // (;KM[6.50]SZ[19];B[dd];W[dd])
+
+        game.RemoveVariation(game2);
+        var result4 = gameInitial.SerializeToSGF(null); // (;KM[6.50]SZ[19];B[dd])
+        Assert.Equal(result2, result4);
+    }
+
+    [Fact]
     public void Test2() {
         var sgf = "(;GM[1]FF[4]AB[as](;B[dp])(;B[dq]))";
         var g = Game.SerializeFromSGF(new StringReader(sgf));

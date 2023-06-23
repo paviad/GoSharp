@@ -277,10 +277,13 @@ namespace GoSharpCore {
         /// </summary>
         /// <param name="n">The coordinates of the move.</param>
         /// <param name="legal">Set to true if the move was legal, false otherwise.</param>
+        /// <param name="dontAddVariationIfIllegal">Set to true to prevent the move
+        /// from being added to the variations list of the current position if the move
+        /// was illegal.</param>
         /// <returns>A game object representing the state of the game after the move.</returns>
         [PublicAPI]
-        public Game MakeMove(Point n, out bool legal) {
-            return MakeMove(n.x, n.y, out legal);
+        public Game MakeMove(Point n, out bool legal, bool dontAddVariationIfIllegal = false) {
+            return MakeMove(n.x, n.y, out legal, dontAddVariationIfIllegal);
         }
 
         /// <summary>
@@ -292,9 +295,12 @@ namespace GoSharpCore {
         /// </summary>
         /// <param name="x">The X coordinate of the move.</param>
         /// <param name="y">The Y coordinate of the move.</param>
+        /// <param name="dontAddVariationIfIllegal">Set to true to prevent the move
+        /// from being added to the variations list of the current position if the move
+        /// was illegal.</param>
         /// <returns>A game object representing the state of the game after the move.</returns>
-        public Game MakeMove(int x, int y) {
-            return MakeMove(x, y, out _);
+        public Game MakeMove(int x, int y, bool dontAddVariationIfIllegal = false) {
+            return MakeMove(x, y, out _, dontAddVariationIfIllegal);
         }
 
         /// <summary>
@@ -307,11 +313,16 @@ namespace GoSharpCore {
         /// <param name="x">The X coordinate of the move.</param>
         /// <param name="y">The Y coordinate of the move.</param>
         /// <param name="legal">Set to true if the move was legal, false otherwise.</param>
+        /// <param name="dontAddVariationIfIllegal">Set to true to prevent the move
+        /// from being added to the variations list of the current position if the move
+        /// was illegal.</param>
         /// <returns>A game object representing the state of the game after the move.</returns>
-        public Game MakeMove(int x, int y, out bool legal) {
+        public Game MakeMove(int x, int y, out bool legal, bool dontAddVariationIfIllegal = false) {
             var g = new Game(this);
             legal = g.InternalMakeMove(x, y);
-            _moves.Add(new Variation(new Point(x, y), g));
+            if (!dontAddVariationIfIllegal || legal) {
+                _moves.Add(new Variation(new Point(x, y), g));
+            }
             return g;
         }
 
@@ -324,6 +335,18 @@ namespace GoSharpCore {
             var g = new Game(this);
             _moves.Add(new Variation(Game.PassMove, g));
             return g;
+        }
+
+        /// <summary>
+        /// Remove a variation from the current game position.
+        /// </summary>
+        /// <param name="variation">The game object returned from a previous call to
+        /// MakeMove or Pass</param>
+        /// <returns></returns>
+        public bool RemoveVariation(Game variation) {
+            var variationFound = _moves.Where(z => z.Game == variation).ToList();
+            variationFound.ForEach(z => _moves.Remove(z));
+            return variationFound.Any();
         }
 
         /// <summary>
